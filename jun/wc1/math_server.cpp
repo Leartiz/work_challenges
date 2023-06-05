@@ -8,23 +8,54 @@ namespace lez
     using namespace boost::asio;
     using namespace boost::asio::ip;
 
-    math_server::math_server(io_context& io_context, const address& addr)
-        : m_io_context{ io_context }
-        , m_acceptor{ io_context }
+    namespace
     {
-    }
+        tcp::endpoint make_ep(const uint16_t port)
+        {
+            return tcp::endpoint(tcp::v4(), port);
+        }
 
-    void math_server::start_accept()
+        tcp::endpoint make_ep(const std::string ipStr, const uint16_t port)
+        {
+            const auto ip = ip::address::from_string(ipStr);
+            return tcp::endpoint(ip, port);
+        }
+    } // impl
+
+    // -------------------------------------------------------------------
+
+    math_server::math_server(boost::asio::io_context& ioc, const uint16_t port)
+        : m_ioc{ ioc }, m_acr{ ioc, make_ep(port) } 
+    { 
+        reg_accept(); 
+    };
+
+    math_server::math_server(io_context& ioc, 
+        const std::string ip, const uint16_t port)
+        : m_ioc{ ioc }, m_acr{ ioc, make_ep(ip, port) } 
     {
-        tcp_connection::pointer new_connection =
+        reg_accept();
+    };
+
+    math_server::math_server(io_context& ioc, const tcp::endpoint& ep)
+        : m_ioc{ ioc }, m_acr{ ioc, ep } 
+    { 
+        reg_accept(); 
+    };
+
+    // -------------------------------------------------------------------
+
+    void math_server::reg_accept()
+    {
+        client_con::pointer new_connection =
             tcp_connection::create(io_context_);
 
-        m_acceptor.async_accept(new_connection->socket(),
+        m_acr.async_accept(new_connection->socket(),
             boost::bind(&tcp_server::handle_accept, this, new_connection,
                 boost::asio::placeholders::error));
     }
 
-    void math_server::handle_accept(tcp_connection::pointer new_connection,
+    void math_server::handle_accept(client_con::pointer new_connection,
         const boost::system::error_code& error)
     {
         if (!error)
@@ -32,6 +63,6 @@ namespace lez
             new_connection->start();
         }
 
-        start_accept();
+        reg_accept();
     }
 }
