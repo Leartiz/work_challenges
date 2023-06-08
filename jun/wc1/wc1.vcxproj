@@ -104,12 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\education\my\pl_cpp\libs\boost_1_82_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\education\my\pl_cpp\work_challenges\jun\wc1;D:\education\my\pl_cpp\libs\boost_1_82_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>D:\education\my\pl_cpp\libs\boost_1_82_0\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,13 +130,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client_con.cpp" />
+    <ClCompile Include="delivery\tcp\handler.cpp" />
+    <ClCompile Include="server\tcp\client_con.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="math_server.cpp" />
+    <ClCompile Include="service\concrete\math.cpp" />
+    <ClCompile Include="server\tcp\math_lsnr.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client_con.h" />
-    <ClInclude Include="math_server.h" />
+    <ClInclude Include="server\tcp\client_con.h" />
+    <ClInclude Include="delivery\tcp\handler.h" />
+    <ClInclude Include="service\concrete\math.h" />
+    <ClInclude Include="server\tcp\math_lsnr.h" />
+    <ClInclude Include="service\service.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

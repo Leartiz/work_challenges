@@ -13,23 +13,74 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Исходные файлы\delivery">
+      <UniqueIdentifier>{0f962b1d-893e-4c0d-8078-affe8433d62a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\delivery">
+      <UniqueIdentifier>{75e79b26-66a1-4c91-bb46-f2b7a6bdc33f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\service">
+      <UniqueIdentifier>{e134032f-dd36-4194-8ba2-4cca6c76cc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\service">
+      <UniqueIdentifier>{a5530498-1355-4fef-9f71-e14e5bdfaa6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\server">
+      <UniqueIdentifier>{fa337d76-e0ba-4ac3-9cf1-8dbd58928651}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\server\tcp">
+      <UniqueIdentifier>{87fcc6ed-bf10-4672-a511-7c78cecf0f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\server">
+      <UniqueIdentifier>{482bc67a-b73d-4890-84c8-454f00cc6876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\server\tcp">
+      <UniqueIdentifier>{d19c754c-9035-47cc-bc7c-7f313c5b229c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\delivery\tcp">
+      <UniqueIdentifier>{286fc70f-8f2a-41c3-bf76-90489a80734b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\delivery\tcp">
+      <UniqueIdentifier>{628f927c-bcd2-4a4a-a47a-fd406253cabb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\server\http">
+      <UniqueIdentifier>{cd2ba87c-e031-4c3f-8fc6-6ad14ae3d281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\server\grpc">
+      <UniqueIdentifier>{a437912a-d0e0-4020-bfb0-25419c477cca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="math_server.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="service\concrete\math.cpp">
+      <Filter>Исходные файлы\service</Filter>
     </ClCompile>
-    <ClCompile Include="client_con.cpp">
+    <ClCompile Include="server\tcp\client_con.cpp">
+      <Filter>Исходные файлы\server\tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="server\tcp\math_lsnr.cpp">
+      <Filter>Исходные файлы\server\tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="delivery\tcp\handler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="math_server.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="service\concrete\math.h">
+      <Filter>Файлы заголовков\service</Filter>
     </ClInclude>
-    <ClInclude Include="client_con.h">
+    <ClInclude Include="server\tcp\client_con.h">
+      <Filter>Файлы заголовков\server\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="server\tcp\math_lsnr.h">
+      <Filter>Файлы заголовков\server\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="delivery\tcp\handler.h">
+      <Filter>Файлы заголовков\delivery\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="service\service.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
