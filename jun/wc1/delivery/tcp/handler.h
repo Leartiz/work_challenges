@@ -11,14 +11,15 @@ namespace lez
 			class handler
 			{
 			public:
-				handler(service::math&);
+				handler(service::contract::math&);
 				virtual ~handler() {};
 
-			public:
 				// Reqs
+			public:
+				double calc_expr(const std::string& body);
 
 			private:
-				service::math& math_service;
+				service::contract::math& math_service;
 			};
 		}
 	}

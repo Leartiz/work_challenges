@@ -6,7 +6,7 @@ namespace lez
 	{
 		namespace tcp
 		{
-			handler::handler(service::math& ms)
+			handler::handler(service::contract::math& ms)
 				: math_service{ ms } {}
 		}
 	}

@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\education\my\pl_cpp\work_challenges\jun\wc1;D:\education\my\pl_cpp\libs\boost_1_82_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\education\my\pl_cpp\libs\exprtk;D:\education\my\pl_cpp\work_challenges\jun\wc1;D:\education\my\pl_cpp\libs\boost_1_82_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>

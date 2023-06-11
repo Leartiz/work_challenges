@@ -1,14 +1,19 @@
 #pragma once
 
+#include <string>
+
 namespace lez
 {
 	namespace service
 	{
-		struct math
+		namespace contract
 		{
-
-			virtual ~math() {};
-		};
+			struct math
+			{
+				virtual double calc_expr(const std::string&) = 0;
+				virtual ~math() {};
+			};
+		}
 	}
 }
 

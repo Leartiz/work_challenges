@@ -28,7 +28,8 @@ namespace lez
 
             // -------------------------------------------------------------------
 
-            math_lsnr::math_lsnr(boost::asio::io_context& ioc, const uint16_t port)
+            math_lsnr::math_lsnr(boost::asio::io_context& ioc, handler& h,
+                const uint16_t port)
                 : m_ioc{ ioc }, m_acr{ ioc, make_ep(port) }
             {
                 reg_accept();
