@@ -10,19 +10,15 @@ namespace lez
 	{
 		namespace impl
 		{
-			double math::calc_expr(const std::string& expr_string)
+			double math::calc_expr(const std::string& expr_string) /* wrap */
 			{
 				using namespace exprtk;
 
-				parser<double> parser;
+				parser<double> pars;
 				expression<double> expr;
 
-				if (!parser.compile(expr_string, expr))
-				{
-					printf("Compilation error...\n");
-					return;
-				}
-
+				if (!pars.compile(expr_string, expr))
+					throw std::runtime_error("math, calc_expr, compile er");
 				return expr.value();
 			}
 		}

@@ -30,20 +30,20 @@ namespace lez
 
             math_lsnr::math_lsnr(boost::asio::io_context& ioc, handler& h,
                 const uint16_t port)
-                : m_ioc{ ioc }, m_acr{ ioc, make_ep(port) }
+                : m_ioc{ ioc }, m_acr{ ioc, make_ep(port) }, m_hr{ h }
             {
                 reg_accept();
             };
 
-            math_lsnr::math_lsnr(io_context& ioc,
-                const std::string ip, const uint16_t port)
-                : m_ioc{ ioc }, m_acr{ ioc, make_ep(ip, port) }
+            math_lsnr::math_lsnr(io_context& ioc, handler& h,
+                const str& ip, const uint16_t port)
+                : m_ioc{ ioc }, m_acr{ ioc, make_ep(ip, port) }, m_hr{ h }
             {
                 reg_accept();
             };
 
-            math_lsnr::math_lsnr(io_context& ioc, const endpoint& ep)
-                : m_ioc{ ioc }, m_acr{ ioc, ep }
+            math_lsnr::math_lsnr(io_context& ioc, handler& h, const endpoint& ep)
+                : m_ioc{ ioc }, m_acr{ ioc, ep }, m_hr{ h }
             {
                 reg_accept();
             };
@@ -52,7 +52,7 @@ namespace lez
 
             void math_lsnr::reg_accept()
             {
-                auto new_ccon = client_con::create(m_ioc);
+                auto new_ccon = client_con::create(m_ioc, m_hr);
                 m_acr.async_accept(new_ccon->sock(),
                     boost::bind(&math_lsnr::handle_accept, this, new_ccon,
                         boost::asio::placeholders::error));

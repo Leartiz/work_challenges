@@ -12,7 +12,7 @@ namespace lez
 		namespace tcp
 		{
 			client_con::client_con(io_context& ioc, handler& hr)
-				: m_ioc{ ioc }, m_sock{ ioc }, m_hr{ hr } {};
+				: m_ioc{ ioc }, m_sock{ ioc }, m_timr{ ioc }, m_hr { hr } {};
 
 			client_con::ptr client_con::create(io_context& ioc, handler& hr)
 			{
@@ -35,6 +35,9 @@ namespace lez
 			{
 				m_rw_msg = std::string(1024, 0);
 				using namespace boost::asio::placeholders;
+
+				m_timr.async_wait(1);
+
 				m_sock.async_read_some(boost::asio::buffer(m_rw_msg),
 					boost::bind(&client_con::handle_read, shared_from_this(),
 						error, bytes_transferred));
@@ -54,7 +57,10 @@ namespace lez
 			void client_con::handle_read(const error_code& err,
 				size_t bytes_transferred)
 			{
+				m_timr.cancel();
 				std::cout << "redd: " << m_rw_msg << std::endl;
+
+				// router
 
 
 				reg_writ("ok");

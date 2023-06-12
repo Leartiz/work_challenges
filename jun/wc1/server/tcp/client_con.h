@@ -4,6 +4,7 @@
 #include <string>
 
 #include <boost/asio.hpp>
+#include <boost/asio/deadline_timer.hpp>
 
 #include "delivery/tcp/handler.h"
 
@@ -20,6 +21,7 @@ namespace lez
 
 				using io_context = boost::asio::io_context;
 				using socket = boost::asio::ip::tcp::socket;
+				using dtimer = boost::asio::deadline_timer;
 				using error_code = boost::system::error_code;
 
 				using handler = delivery::tcp::handler;
@@ -44,6 +46,7 @@ namespace lez
 			private:
 				io_context& m_ioc;
 				socket m_sock;
+				dtimer m_timr;
 
 			private:
 				handler& m_hr;
