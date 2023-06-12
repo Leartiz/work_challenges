@@ -36,7 +36,10 @@ namespace lez
 				m_rw_msg = std::string(1024, 0);
 				using namespace boost::asio::placeholders;
 
-				m_timr.async_wait(1);
+				m_timr.expires_from_now(boost::posix_time::seconds(3));
+				m_timr.async_wait(
+					boost::bind(&client_con::handle_wait, shared_from_this(),
+						error));
 
 				m_sock.async_read_some(boost::asio::buffer(m_rw_msg),
 					boost::bind(&client_con::handle_read, shared_from_this(),
@@ -69,7 +72,18 @@ namespace lez
 			void client_con::handle_writ(const error_code& err,
 				size_t bytes_transferred)
 			{
+				m_timr.cancel();
 				std::cout << "wrtd: " << m_rw_msg << std::endl;
+				reg_read();
+			}
+
+			void client_con::handle_wait(const error_code& err)
+			{
+				if (err) {
+					return;
+				}
+
+				m_sock.close();
 			}
 		}
 	}

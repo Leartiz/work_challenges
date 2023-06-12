@@ -42,6 +42,7 @@ namespace lez
 			private:
 				void handle_read(const error_code&, size_t);
 				void handle_writ(const error_code&, size_t);
+				void handle_wait(const error_code&);
 
 			private:
 				io_context& m_ioc;
