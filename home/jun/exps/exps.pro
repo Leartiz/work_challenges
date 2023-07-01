@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     try_boost_log \
+    try_condition_variable \
     try_deadline_timer \
     try_exprtk \
     try_hide_impl \
