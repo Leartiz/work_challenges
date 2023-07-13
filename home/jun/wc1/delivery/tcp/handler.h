@@ -14,7 +14,7 @@ namespace lez
 				handler(service::contract::math&);
 				virtual ~handler() {};
 
-				// Reqs
+				// reqs
 			public:
 				double calc_expr(const std::string& body);
 

@@ -11,7 +11,7 @@ namespace lez
 
 			double handler::calc_expr(const std::string& body)
 			{
-				math_service.calc_expr
+				return {};
 			}
 		}
 	}

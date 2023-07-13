@@ -104,13 +104,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\education\my\pl_cpp\libs\exprtk;D:\education\my\pl_cpp\work_challenges\jun\wc1;D:\education\my\pl_cpp\libs\boost_1_82_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(EXPRTK_PATH);$(BOOST_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\education\my\pl_cpp\libs\boost_1_82_0\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST_PATH)\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,26 +122,29 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(EXPRTK_PATH);$(BOOST_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(BOOST_PATH)\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="delivery\tcp\handler.cpp" />
     <ClCompile Include="server\tcp\client_con.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="service\concrete\math.cpp" />
     <ClCompile Include="server\tcp\math_lsnr.cpp" />
+    <ClCompile Include="service\impl\math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server\tcp\client_con.h" />
     <ClInclude Include="delivery\tcp\handler.h" />
-    <ClInclude Include="service\concrete\math.h" />
     <ClInclude Include="server\tcp\math_lsnr.h" />
+    <ClInclude Include="service\impl\math.h" />
     <ClInclude Include="service\service.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
