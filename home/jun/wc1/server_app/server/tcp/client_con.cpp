@@ -61,6 +61,8 @@ namespace lez
 				size_t bytes_transferred)
 			{
 				m_timr.cancel();
+
+				
 				std::cout << "redd: " << m_rw_msg << std::endl;
 
 				// router

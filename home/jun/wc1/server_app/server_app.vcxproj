@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5a3ad579-e403-48a9-8f00-3035689f446b}</ProjectGuid>
-    <RootNamespace>wc1</RootNamespace>
+    <ProjectGuid>{2a4bcf22-f7fb-4c24-bae8-607497deed67}</ProjectGuid>
+    <RootNamespace>serverapp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -104,14 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(EXPRTK_PATH);$(BOOST_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(EXPRTK_PATH);$(BOOST_PATH);$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST_PATH)\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST_PATH)\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(EXPRTK_PATH);$(BOOST_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EXPRTK_PATH);$(BOOST_PATH);$(MSBuildProjectDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -130,19 +129,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST_PATH)\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST_PATH)\stage\lib\libboost_log-vc143-mt-gd-x64-1_82.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="delivery\tcp\handler.cpp" />
-    <ClCompile Include="server\tcp\client_con.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="server\tcp\client_con.cpp" />
     <ClCompile Include="server\tcp\math_lsnr.cpp" />
     <ClCompile Include="service\impl\math.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="server\tcp\client_con.h" />
     <ClInclude Include="delivery\tcp\handler.h" />
+    <ClInclude Include="server\tcp\client_con.h" />
     <ClInclude Include="server\tcp\math_lsnr.h" />
     <ClInclude Include="service\impl\math.h" />
     <ClInclude Include="service\service.h" />
