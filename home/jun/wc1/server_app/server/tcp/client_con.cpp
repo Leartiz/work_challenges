@@ -4,6 +4,7 @@
 #include "client_con.h"
 
 #include <boost/bind.hpp>
+//#include <boost/log/trivial.hpp>
 
 namespace lez
 {
@@ -61,6 +62,12 @@ namespace lez
 				size_t bytes_transferred)
 			{
 				m_timr.cancel();
+				if (err) {
+					// TODO: добавить запись в лог-файл
+					m_sock.close();
+					return;
+				}
+
 
 				
 				std::cout << "redd: " << m_rw_msg << std::endl;
@@ -75,16 +82,21 @@ namespace lez
 				size_t bytes_transferred)
 			{
 				m_timr.cancel();
+				if (err) {
+					m_sock.close();
+					return;
+				}
+
 				std::cout << "wrtd: " << m_rw_msg << std::endl;
 				reg_read();
 			}
 
 			void client_con::handle_wait(const error_code& err)
 			{
-				if (err) {
-					return;
+				std::cerr << "handle_wait";
+				if (err) { 
+					std::cerr << "ERR";
 				}
-
 				m_sock.close();
 			}
 		}

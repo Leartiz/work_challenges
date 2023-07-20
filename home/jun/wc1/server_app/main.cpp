@@ -19,7 +19,7 @@ int main() /* or wrap in a class: App */
 		boost::asio::io_context ioc;
 		lez::server::tcp::math_lsnr tcp_mlsnr(ioc, h, 24444);
 
-		std::cout << "Listen...";
+		std::cout << "Listen on: " << 24444;
 		ioc.run();
 	}
 	catch (std::exception& ex) {

@@ -52,6 +52,7 @@ namespace lez
 			private:
 				handler& m_hr;
 				str m_rw_msg;
+				str m_rw_buf;
 			};
 		}
 	}
