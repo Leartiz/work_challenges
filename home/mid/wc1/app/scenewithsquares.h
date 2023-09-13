@@ -19,6 +19,7 @@ public:
     void block(int percent = 25);
 
 public:
+    QVector<QVector<int>> toAdjacencyMatrix();
     int rowCount() const;
     int colCount() const;
 

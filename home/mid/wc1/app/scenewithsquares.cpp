@@ -116,6 +116,23 @@ void SceneWithSquares::block(int percent)
     }
 }
 
+QVector<QVector<int>> SceneWithSquares::toAdjacencyMatrix()
+{
+    const auto vCount = rowCount() * colCount();
+    auto result = QVector<QVector<int>>(
+        vCount, QVector<int>(vCount, 0));
+
+    // ***
+
+    for (int i = 0; i < rowCount(); ++i) {
+        for (int j = 0; j < colCount(); ++j) {
+
+        }
+    }
+
+    return result;
+}
+
 int SceneWithSquares::rowCount() const
 {
     return m_rects.size();
@@ -149,6 +166,12 @@ void SceneWithSquares::onClicked_square()
 
     const auto square =
         qobject_cast<SquareItem*>(sender());
+
+    if (m_begEnd.size() == 1) {
+        if (m_begEnd.front() == square) {
+            return;
+        }
+    }
 
     m_begEnd.push_back(square);
     square->setBrush(

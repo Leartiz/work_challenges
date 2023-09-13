@@ -17,6 +17,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+    // QWidget interface
+protected:
+    void wheelEvent(QWheelEvent *event);
+
 private slots:
     void onClicked_pushBtnGenerate();
 
