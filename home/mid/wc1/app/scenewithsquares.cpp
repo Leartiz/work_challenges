@@ -35,6 +35,13 @@ QVector<QPoint> genRandPoints(const int count,
 
 // -----------------------------------------------------------------------
 
+const QColor SceneWithSquares::freeCellColor{ Qt::lightGray };
+const QColor SceneWithSquares::obstacleCellColor{ Qt::black };
+const QColor SceneWithSquares::begOrEndCellColor{ Qt::red };
+const QColor SceneWithSquares::borderCellColor{ Qt::black };
+
+// -----------------------------------------------------------------------
+
 SceneWithSquares::SceneWithSquares(
     const QRectF &sceneRect,
     QObject *parent)
@@ -52,7 +59,7 @@ void SceneWithSquares::recreate(int w, int h)
     // ***
 
     clear();
-    m_begEnd.clear();
+    m_begAndEnd.clear();
     m_rects = Matrix{
         h, Row{ w, nullptr }
     };
@@ -71,8 +78,8 @@ void SceneWithSquares::recreate(int w, int h)
                         this, &SceneWithSquares::onClicked_square);
             }
 
-            square->setPen(QPen{ Qt::black });
-            square->setBrush(QBrush{ Qt::lightGray });
+            square->setPen(QPen{ borderCellColor });
+            square->setBrush(QBrush{ freeCellColor });
 
             m_rects[i][j] = square;
             addItem(square);
@@ -112,7 +119,7 @@ void SceneWithSquares::block(int percent)
 
     for (const auto& p : points) {
         m_rects[p.y()][p.x()]
-            ->setBrush(QBrush{ Qt::black });
+            ->setBrush(QBrush{ obstacleCellColor });
     }
 }
 
@@ -161,25 +168,26 @@ void SceneWithSquares::mouseMoveEvent(
 
 void SceneWithSquares::onClicked_square()
 {
-    if (m_begEnd.size() >= 2)
+    if (m_begAndEnd.size() >= 2)
         return;
 
     const auto square =
         qobject_cast<SquareItem*>(sender());
 
-    if (m_begEnd.size() == 1) {
-        if (m_begEnd.front() == square) {
+    if (m_begAndEnd.size() == 1) {
+        if (m_begAndEnd.front() == square) {
             return;
         }
     }
 
-    m_begEnd.push_back(square);
+    m_begAndEnd.push_back(square);
     square->setBrush(
-        QBrush{ Qt::red });
+        QBrush{ begOrEndCellColor }
+        );
 
     // ***
 
-    if (m_begEnd.size() == 2) {
+    if (m_begAndEnd.size() == 2) {
 
     }
 }

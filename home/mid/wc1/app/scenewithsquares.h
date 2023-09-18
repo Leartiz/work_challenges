@@ -1,6 +1,7 @@
 #ifndef SCENEWITHSQUARES_H
 #define SCENEWITHSQUARES_H
 
+#include <QColor>
 #include <QObject>
 #include <QVector>
 
@@ -10,6 +11,12 @@
 class SceneWithSquares : public QGraphicsScene
 {
     Q_OBJECT
+
+public:
+    static const QColor freeCellColor;
+    static const QColor obstacleCellColor;
+    static const QColor begOrEndCellColor;
+    static const QColor borderCellColor;
 
 public:
     explicit SceneWithSquares(
@@ -34,7 +41,7 @@ private:
     using Row = QVector<QGraphicsRectItem*>;
     using Matrix = QVector<Row>;
     Matrix m_rects;
-    Row m_begEnd;
+    Row m_begAndEnd;
 
 private:
     qreal m_squareSideW{ 0 };
