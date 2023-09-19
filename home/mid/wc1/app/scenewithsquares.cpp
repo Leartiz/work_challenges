@@ -80,6 +80,7 @@ SceneWithSquares::SceneWithSquares(
     : QGraphicsScene{ sceneRect, parent }
 {}
 
+/* sync */
 void SceneWithSquares::generate(const int w, const int h,
                                 const int blockedPercent)
 {
@@ -102,6 +103,8 @@ void SceneWithSquares::recreate(const int w, const int h)
 
     clear();
     m_begAndEnd.clear();
+    m_showedPath.clear();
+
     m_rects = Matrix{
         h, Row{ w, nullptr }
     };
@@ -182,6 +185,7 @@ QVector<QVector<int>> SceneWithSquares::toAdjacencyMatrix()
             const int baseI, const int baseJ,
             const int nextI, const int nextJ
             ) -> void {
+
         if (baseI < 0 || baseI >= rowCount()) return;
         if (baseJ < 0 || baseJ >= colCount()) return;
 
@@ -250,15 +254,46 @@ void SceneWithSquares::mouseMoveEvent(
     if (isObstacleCell(square)) return;
 
     if (m_begAndEnd.size() == 1) {
+        const QPair<int, int> coordVx{
+            getIndexFromCell(m_begAndEnd[0], rowCount(), colCount()),
+            getIndexFromCell(square, rowCount(), colCount())
+        };
+
+        if (m_cachedPaths.contains(coordVx)) {
+            reshowPath(m_cachedPaths[coordVx]);
+            return;
+        }
+
+        // ***
+
         const auto future = runPathFindingTask(
-                    getIndexFromCell(m_begAndEnd[0], rowCount(), colCount()),
-                    getIndexFromCell(square, rowCount(), colCount())
-                );
+                    coordVx.first, coordVx.second
+                    );
 
         const auto fw = new QFutureWatcher<PathFindingRes>(this);
         fw->setFuture(future);
 
+        // ***
 
+        const auto ok = connect(fw, &QFutureWatcher<QVector<int>>::finished,
+                                this, [this, coordVx]() -> void {
+            const auto fw = static_cast<QFutureWatcher<PathFindingRes>*>(sender());
+            const auto f = fw->future();
+
+            const auto futResult = f.result();
+            if (futResult.stateId != m_stateId) {
+                return;
+            }
+
+            // ***
+
+            m_cachedPaths[coordVx] = futResult.path;
+
+            reshowPath(futResult.path);
+            fw->deleteLater();
+        });
+
+        Q_ASSERT(ok);
     }
 
     QGraphicsScene::mouseMoveEvent(event);
@@ -311,14 +346,14 @@ void SceneWithSquares::onClicked_square()
                     return;
                 }
 
-                showPath(futResult.path);
+                reshowPath(futResult.path);
                 fw->deleteLater();
             });
 
             Q_ASSERT(ok);
         }
 
-        m_paths.clear();
+        m_cachedPaths.clear();
     }
 }
 
@@ -342,8 +377,12 @@ QFuture<SceneWithSquares::PathFindingRes> SceneWithSquares::runPathFindingTask(
 
 // -----------------------------------------------------------------------
 
-void SceneWithSquares::showPath(const QVector<int>& vec)
+void SceneWithSquares::reshowPath(const QVector<int>& vec)
 {
+    QMutexLocker _{ &m_mxShowPath };
+    hideShowedPath();
+
+    m_showedPath = vec;
     for (int i = 0; i < vec.size(); ++i) {
         const auto coord =
                 CoordConverter::indexToPair(
@@ -354,12 +393,19 @@ void SceneWithSquares::showPath(const QVector<int>& vec)
     }
 }
 
-void SceneWithSquares::hidePath(const QVector<int>& vec)
+void SceneWithSquares::hideShowedPath()
 {
-    //        if (path.empty()) {
-    //            emit pathNotFound();
-    //            return;
-    //        }
+    QMutexLocker _{ &m_mxShowPath };
+    if (m_showedPath.empty()) return;
 
-    //        showPath(path);
+    for (int i = 0; i < m_showedPath.size(); ++i) {
+        const auto coord =
+                CoordConverter::indexToPair(
+                    m_showedPath[i], rowCount(), colCount());
+
+        m_rects[coord.first][coord.second]
+                ->setBrush(QBrush{ freeCellColor });
+    }
+
+    m_showedPath.clear();
 }

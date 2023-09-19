@@ -12,6 +12,9 @@
 #include <QFuture>
 #include <QUuid>
 
+#include <QMutex>
+#include <QMutexLocker>
+
 class SquareItem;
 
 class SceneWithSquares : public QGraphicsScene
@@ -64,8 +67,8 @@ private:
 private:
     QFuture<PathFindingRes> runPathFindingTask(
             const int begVx, const int endVx);
-    void showPath(const QVector<int>& vec);
-    void hidePath(const QVector<int>& vec);
+    void reshowPath(const QVector<int>& vec);
+    void hideShowedPath();
 
 private:
     Matrix m_rects;
@@ -76,7 +79,9 @@ private:
     qreal m_squareSideH{ 0 };
 
 private:
-    QHash<QPair<int, int>, QVector<int>> m_paths;
+    QRecursiveMutex m_mxShowPath;
+    QVector<int> m_showedPath;
+    QHash<QPair<int, int>, QVector<int>> m_cachedPaths;
     QUuid m_stateId;
 };
 
