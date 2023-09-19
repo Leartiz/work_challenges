@@ -1,9 +1,11 @@
 #include <QIcon>
-#include <QDebug>
-#include <QWheelEvent>
-#include <QtMath>
 
+#include <QDebug>
+#include <QMessageBox>
+
+#include <QWheelEvent>
 #include <QScrollBar>
+#include <QtMath>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -16,17 +18,24 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowIcon(
         QIcon(":/logo/res/maze.png"));
 
-    // ***
-
-    {
-        connect(m_ui->pushBtnGenerate, &QPushButton::clicked,
-                this, &MainWindow::onClicked_pushBtnGenerate);
-    }
-
-    // ***
-
     m_scene = new SceneWithSquares(
         { 0, 0, 500, 500 });
+
+    // ***
+
+    // ui
+    {
+        auto ok = connect(m_ui->pushBtnGenerate, &QPushButton::clicked,
+                          this, &MainWindow::onClicked_pushBtnGenerate);
+        Q_ASSERT(ok);
+    }
+
+    // model
+    {
+        auto ok = connect(m_scene, &SceneWithSquares::pathNotFound,
+                          this, &MainWindow::onPathNotFound_scene);
+        Q_ASSERT(ok);
+    }
 
     m_ui->graphicsView->setScene(m_scene);
     m_ui->graphicsView
@@ -90,16 +99,18 @@ void MainWindow::wheelEvent(QWheelEvent *pWheelEvent)
 
 void MainWindow::onClicked_pushBtnGenerate()
 {
-    m_scene->recreate(
-        m_ui->spinBoxW->value(),
-        m_ui->spinBoxH->value());
-
-    // ***
-
-    m_scene->block();
+    m_scene->generate(
+                m_ui->spinBoxW->value(),
+                m_ui->spinBoxH->value()
+                );
 
     // ***
 
     m_ui->graphicsView->resetTransform();
     m_scene->advance();
+}
+
+void MainWindow::onPathNotFound_scene()
+{
+    QMessageBox::information(this, tr("Info"), tr("Path not found!"));
 }

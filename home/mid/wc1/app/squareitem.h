@@ -18,7 +18,7 @@ signals:
     // QGraphicsItem interface
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent*);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent*);    
 };
 
 #endif // SQUAREITEM_H

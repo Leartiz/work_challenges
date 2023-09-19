@@ -19,10 +19,11 @@ public:
 
     // QWidget interface
 protected:
-    void wheelEvent(QWheelEvent *event);
+    void wheelEvent(QWheelEvent *event) override;
 
 private slots:
     void onClicked_pushBtnGenerate();
+    void onPathNotFound_scene();
 
 private:
     Ui::MainWindow *m_ui;
