@@ -407,5 +407,12 @@ void SceneWithSquares::hideShowedPath()
                 ->setBrush(QBrush{ freeCellColor });
     }
 
+    if (!m_begAndEnd.empty()) {
+        for (int i = 0; i < m_begAndEnd.size(); ++i) {
+            m_begAndEnd[i]
+                    ->setBrush(QBrush{ pathCellColor });
+        }
+    }
+
     m_showedPath.clear();
 }
