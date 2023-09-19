@@ -10,6 +10,7 @@ class SquareItem : public QObject, public QGraphicsRectItem
 
 public:
     explicit SquareItem(const QRectF &rect);
+    void setText(const QString& txt);
 
 signals:
     void clicked();
@@ -18,7 +19,15 @@ signals:
     // QGraphicsItem interface
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent*);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent*);    
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
+
+    // QGraphicsItem interface
+public:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget);
+
+private:
+    QString m_text;
 };
 
 #endif // SQUAREITEM_H

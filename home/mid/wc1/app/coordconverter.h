@@ -1,6 +1,7 @@
 #ifndef COORDCONVERTER_H
 #define COORDCONVERTER_H
 
+#include <QPair>
 #include <QPoint>
 
 namespace CoordConverter

@@ -104,6 +104,7 @@ void SceneWithSquares::recreate(const int w, const int h)
     clear();
     m_begAndEnd.clear();
     m_showedPath.clear();
+    m_cachedPaths.clear();
 
     m_rects = Matrix{
         h, Row{ w, nullptr }
@@ -319,6 +320,15 @@ void SceneWithSquares::onClicked_square()
 
     // ***
 
+    if (m_begAndEnd.empty()) {
+        square->setText("A");
+    }
+    else {
+        square->setText("B");
+    }
+
+    // ***
+
     m_begAndEnd.push_back(square);
     square->setBrush(
                 QBrush{ pathCellColor }
@@ -344,6 +354,10 @@ void SceneWithSquares::onClicked_square()
                 const auto futResult = f.result();
                 if (futResult.stateId != m_stateId) {
                     return;
+                }
+
+                if (futResult.path.empty()) {
+                    emit pathNotFound(); // safe?
                 }
 
                 reshowPath(futResult.path);
@@ -403,8 +417,9 @@ void SceneWithSquares::hideShowedPath()
                 CoordConverter::indexToPair(
                     m_showedPath[i], rowCount(), colCount());
 
-        m_rects[coord.first][coord.second]
-                ->setBrush(QBrush{ freeCellColor });
+        if (m_rects[coord.first][coord.second]->brush().color() == pathCellColor)
+            m_rects[coord.first][coord.second]
+                    ->setBrush(QBrush{ freeCellColor });
     }
 
     if (!m_begAndEnd.empty()) {
