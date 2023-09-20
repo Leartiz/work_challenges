@@ -30,6 +30,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
+    void onTriggered_actionExit();
     void onClicked_pushBtnGenerate();
     void onTriggered_actionAutoFindPath();
     void onPathNotFound_scene();

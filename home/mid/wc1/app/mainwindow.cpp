@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
         // actions
         {
             ok = connect(m_ui->actionExit, &QAction::triggered,
-                         qApp, &QApplication::quit);
+                         this, &MainWindow::onTriggered_actionExit);
             Q_ASSERT(ok);
 
             ok = connect(m_ui->actionAutoFindPath, &QAction::triggered,
@@ -122,6 +122,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     m_settings->setValue(ConfigKey::winPos, pos());
     event->accept();
+}
+
+void MainWindow::onTriggered_actionExit()
+{
+    m_settings->setValue(ConfigKey::winPos, pos());
+    qApp->quit();
 }
 
 void MainWindow::onClicked_pushBtnGenerate()
