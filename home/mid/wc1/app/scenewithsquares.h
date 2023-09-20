@@ -10,7 +10,7 @@
 #include <QGraphicsRectItem>
 
 #include <QFuture>
-#include <QUuid>
+#include <QAtomicInt>
 
 #include <QMutex>
 #include <QMutexLocker>
@@ -23,13 +23,15 @@ class SceneWithSquares : public QGraphicsScene
 
     friend class AppTests;
 
+private:
     using Row = QVector<SquareItem*>;
     using Matrix = QVector<Row>;
+    using Path = QVector<int>;
 
-    struct PathFindingRes final
+    struct PathFindingRes final // for future.
     {
-        QUuid stateId;
-        QVector<int> path;
+        int stateId{ 0 };
+        Path path;
     };
 
 public:
@@ -44,9 +46,9 @@ public:
         QObject *parent = nullptr);
     void generate(const int w, const int h,
                   const int blockedPercent = 25);
+    void setAutoFindPath(const bool value);
 
 public:
-    QVector<QVector<int>> toAdjacencyMatrix();
     int rowCount() const;
     int colCount() const;
 
@@ -61,6 +63,7 @@ private slots:
     void onClicked_square();
 
 private:
+    QVector<QVector<int>> toAdjacencyMatrix();
     void recreate(const int w, const int h);
     void block(const int percent = 25);
 
@@ -70,19 +73,17 @@ private:
     void reshowPath(const QVector<int>& vec);
     void hideShowedPath();
 
+    // to pimpl?
 private:
     Matrix m_rects;
     Row m_begAndEnd;
 
 private:
-    qreal m_squareSideW{ 0 };
-    qreal m_squareSideH{ 0 };
-
-private:
-    QRecursiveMutex m_mxShowPath;
-    QVector<int> m_showedPath;
-    QHash<QPair<int, int>, QVector<int>> m_cachedPaths;
-    QUuid m_stateId;
+    Path m_showedPath;
+    QHash<QPair<int, int>, Path> m_cachedPaths;
+    QVector<QVector<int>> m_cachedAdjMatrix;
+    bool m_autoFindPath;
+    int m_stateId;
 };
 
 #endif // SCENEWITHSQUARES_H

@@ -14,14 +14,16 @@ SOURCES += \
     mainwindow.cpp \
     pathfinder.cpp \
     scenewithsquares.cpp \
-    squareitem.cpp
+    squareitem.cpp \
+    viewwithsquares.cpp
 
 HEADERS += \
     coordconverter.h \
     mainwindow.h \
     pathfinder.h \
     scenewithsquares.h \
-    squareitem.h
+    squareitem.h \
+    viewwithsquares.h
 
 FORMS += \
     mainwindow.ui

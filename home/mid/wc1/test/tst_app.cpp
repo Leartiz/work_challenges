@@ -81,5 +81,18 @@ void AppTests::test_SceneWithSquares_recreate_data()
     // TODO: ?
 }
 
+// PathFinder
+// -----------------------------------------------------------------------
+
+void AppTests::test_PathFinder_get()
+{
+    // TODO: ?
+}
+
+void AppTests::test_PathFinder_get_data()
+{
+    // TODO: ?
+}
+
 QTEST_APPLESS_MAIN(AppTests)
 

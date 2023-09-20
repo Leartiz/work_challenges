@@ -28,6 +28,17 @@ MainWindow::MainWindow(QWidget *parent)
         auto ok = connect(m_ui->pushBtnGenerate, &QPushButton::clicked,
                           this, &MainWindow::onClicked_pushBtnGenerate);
         Q_ASSERT(ok);
+
+        // actions
+        {
+            ok = connect(m_ui->actionExit, &QAction::triggered,
+                         qApp, &QApplication::quit);
+            Q_ASSERT(ok);
+
+            ok = connect(m_ui->actionAutoFindPath, &QAction::triggered,
+                         this, &MainWindow::onTriggered_actionAutoFindPath);
+            Q_ASSERT(ok);
+        }
     }
 
     // model
@@ -38,8 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     m_ui->graphicsView->setScene(m_scene);
-    m_ui->graphicsView
-        ->setMouseTracking(true);
+    m_ui->graphicsView->setMouseTracking(true);
 
     // ***
 
@@ -55,46 +65,46 @@ MainWindow::~MainWindow()
     delete m_ui;
 }
 
-void MainWindow::wheelEvent(QWheelEvent *pWheelEvent)
-{
-    /*
-    qDebug() << "angleDelta:" << pWheelEvent->angleDelta();
-    qDebug() << "pixelDelta:" << pWheelEvent->pixelDelta();
+// TODO: move the handler to view?
+void MainWindow::wheelEvent(QWheelEvent *event)
+{    
+    const double zoomInFactor = 1.1;
+    const double zoomOutFactor = 0.9;
 
-    qDebug() << "phase:"    << pWheelEvent->phase();
-    qDebug() << "position:" << pWheelEvent->position();
+    double zoomFactor = zoomInFactor;
+    if (event->angleDelta().y() < 0) {
+        zoomFactor = zoomOutFactor;
+    }
 
-    qDebug() << "viewport width:" << m_ui->graphicsView->viewport()->width();
-    qDebug() << "viewport height" << m_ui->graphicsView->viewport()->height();
-    */
+    const QPointF targetViewportPos =
+        event->position();
 
     // ***
 
-    const double angle = pWheelEvent->angleDelta().y(); // 120, -120
-    const double factor = qPow(1.00075, angle); /* manual selection */
-
-    const QPointF targetViewportPos = pWheelEvent->position();
-    const QPointF targetScenePos = m_ui->graphicsView->mapToScene(
+    const QPointF oldScenePos = m_ui->graphicsView->mapToScene(
         targetViewportPos.toPoint());
 
-    m_ui->graphicsView->centerOn(targetScenePos);
-    m_ui->graphicsView->scale(factor, factor);
+    m_ui->graphicsView->scale(
+        zoomFactor, zoomFactor);
 
-    const QPointF viewportCenterPos{
-        m_ui->graphicsView->viewport()->width() / 2.0,
-        m_ui->graphicsView->viewport()->height() / 2.0
-    };
+    const QPointF newScenePos = m_ui->graphicsView->mapToScene(
+        targetViewportPos.toPoint());
+
+    // ***
+
     const QPointF deltaViewportPos =
-        targetScenePos - viewportCenterPos;
+        newScenePos - oldScenePos;
 
-    const QPointF viewportCenter =
-        m_ui->graphicsView->mapFromScene(targetScenePos) -
-                                   deltaViewportPos;
-    m_ui->graphicsView->centerOn(
-        m_ui->graphicsView->mapToScene(
-            viewportCenter.toPoint()));
+    m_ui->graphicsView->translate(
+        deltaViewportPos.x(), deltaViewportPos.y()
+        );
 
-    return;
+    event->accept();
+}
+
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+    QMainWindow::moveEvent(event);
 }
 
 void MainWindow::onClicked_pushBtnGenerate()
@@ -110,7 +120,14 @@ void MainWindow::onClicked_pushBtnGenerate()
     m_scene->advance();
 }
 
+void MainWindow::onTriggered_actionAutoFindPath()
+{
+    m_scene->setAutoFindPath(
+        m_ui->actionAutoFindPath->isChecked());
+}
+
 void MainWindow::onPathNotFound_scene()
 {
-    QMessageBox::information(this, tr("Info"), tr("Path not found!"));
+    QMessageBox::information(
+        this, tr("Info"), tr("Path not found!"));
 }

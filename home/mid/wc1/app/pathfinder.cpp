@@ -1,3 +1,5 @@
+#include <QQueue>
+
 #include <utility>
 #include <algorithm>
 
@@ -9,6 +11,7 @@ PathFinder::PathFinder(QVector<QVector<int>>&& mx)
 PathFinder::PathFinder(const QVector<QVector<int>>& matrix)
     : m_matrix{ matrix } {}
 
+// TODO: construct a diagram of the algorithm's operation
 QVector<int> PathFinder::get(const int beg, const int end) const
 {
     const size_t n =
@@ -16,27 +19,26 @@ QVector<int> PathFinder::get(const int beg, const int end) const
 
     QVector<int> p(n);
     p[beg] = -1;
-    QVector<bool> visited(n, false);
 
-    QVector<int> q;
+    QQueue<int> q;
     q.push_back(beg);
 
+    QVector<bool> visited(n, false);
     visited[beg] = true;
 
-    int vis{ 0 };
     while (!q.empty()) {
-        vis = q.front();
+        const auto current = q.front();
         q.pop_front();
 
         // ***
 
-        for (int i = 0; i < m_matrix[vis].size(); ++i) {
-            auto to = m_matrix[vis][i];
-            if (to == 1 && !visited[i]) {
+        for (int i = 0; i < m_matrix[current].size(); ++i) {
+            const auto hasEdge = m_matrix[current][i];
+            if (hasEdge && !visited[i]) {
                 q.push_back(i);
                 visited[i] = true;
 
-                p[i] = vis;
+                p[i] = current;
             }
         }
     }

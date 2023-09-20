@@ -2,6 +2,7 @@
 
 #include <QtNumeric>
 #include <QRandomGenerator>
+#include <QDateTime>
 
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
@@ -19,7 +20,12 @@ namespace
 QVector<QPoint> genRandPoints(const int count,
                               const int w, const int h)
 {
-    static QRandomGenerator rg;
+    static QRandomGenerator rg(
+        quint32(QDateTime::currentDateTimeUtc()
+                    .toSecsSinceEpoch())
+        );
+
+    // ***
 
     if (w < 0 || h < 0)
         return {};
@@ -37,10 +43,11 @@ QVector<QPoint> genRandPoints(const int count,
 
 bool isObstacleCell(const SquareItem* const one)
 {
-    return one->brush().color() == SceneWithSquares::obstacleCellColor;
+    return
+        one->brush().color() == SceneWithSquares::obstacleCellColor;
 }
 
-// not the best solution since the square item is inherited from the object...
+// not the best solution since...
 void putCoordToCell(SquareItem* const square, const QPoint& p)
 {
     square->setProperty("coord", p);
@@ -75,23 +82,26 @@ const QColor SceneWithSquares::borderCellColor{ Qt::black };
 // -----------------------------------------------------------------------
 
 SceneWithSquares::SceneWithSquares(
-    const QRectF &sceneRect,
-    QObject *parent)
+    const QRectF &sceneRect, QObject *parent)
     : QGraphicsScene{ sceneRect, parent }
+    , m_autoFindPath{ true }
+    , m_stateId{ 0 }
 {}
+
+void SceneWithSquares::setAutoFindPath(const bool value)
+{
+    m_autoFindPath = value;
+    if (m_autoFindPath) {
+        return;
+    }
+
+    hideShowedPath();
+    m_cachedPaths.clear();
+}
 
 /* sync */
 void SceneWithSquares::generate(const int w, const int h,
                                 const int blockedPercent)
-{
-    recreate(w, h);
-    block(blockedPercent);
-
-    m_stateId =
-            QUuid::createUuid();
-}
-
-void SceneWithSquares::recreate(const int w, const int h)
 {
     if (w <= 0 || h <= 0) {
         throw std::runtime_error(
@@ -99,25 +109,44 @@ void SceneWithSquares::recreate(const int w, const int h)
                 .toStdString());
     }
 
+    if (blockedPercent < 0 || blockedPercent > 100) {
+        throw std::runtime_error(
+            QObject::tr("percent is incorrect")
+                .toStdString());
+    }
+
     // ***
 
+    ++m_stateId;
+
+    recreate(w, h);
+    block(blockedPercent);
+}
+
+void SceneWithSquares::recreate(const int w, const int h)
+{
     clear();
+    m_rects.clear();
     m_begAndEnd.clear();
+
     m_showedPath.clear();
     m_cachedPaths.clear();
+    m_cachedAdjMatrix.clear();
 
     m_rects = Matrix{
         h, Row{ w, nullptr }
     };
 
-    m_squareSideW = sceneRect().width() / w;
-    m_squareSideH = sceneRect().width() / h;
+    // ***
+
+    const auto sqSideW = sceneRect().width() / w;
+    const auto sqSideH = sceneRect().height() / h;
 
     qreal x = 0, y = 0;
     for (int i = 0; i < h; ++i) {
         for (int j = 0; j < w; ++j) {
             const auto square = new SquareItem(
-                { x, y, m_squareSideW, m_squareSideH });
+                { x, y, sqSideW, sqSideH });
 
             {
                 const auto ok = connect(square, &SquareItem::clicked,
@@ -132,21 +161,15 @@ void SceneWithSquares::recreate(const int w, const int h)
             m_rects[i][j] = square;
             addItem(square);
 
-            x += m_squareSideW;
+            x += sqSideW;
         }
-        y += m_squareSideH;
+        y += sqSideH;
         x = 0;
     }
 }
 
 void SceneWithSquares::block(const int percent)
 {
-    if (percent < 0 || percent > 100) {
-        throw std::runtime_error(
-            QObject::tr("percent is incorrect")
-                .toStdString());
-    }
-
     if (m_rects.empty()) {
         throw std::runtime_error(
             QObject::tr("rects is empty")
@@ -175,6 +198,9 @@ void SceneWithSquares::block(const int percent)
 
 QVector<QVector<int>> SceneWithSquares::toAdjacencyMatrix()
 {
+    if (!m_cachedAdjMatrix.isEmpty())
+        return m_cachedAdjMatrix;
+
     const auto vxCount = (rowCount() * colCount());
     auto result = QVector<QVector<int>>(
         vxCount, QVector<int>(vxCount, 0));
@@ -218,7 +244,7 @@ QVector<QVector<int>> SceneWithSquares::toAdjacencyMatrix()
 
     for (int i = 0; i < rowCount(); ++i) {
         for (int j = 0; j < colCount(); ++j) {
-            // check neighbors!
+            // neighbors...
             addEdgeIfNeed(i, j, i + 1, j);
             addEdgeIfNeed(i, j, i - 1, j);
             addEdgeIfNeed(i, j, i, j + 1);
@@ -226,7 +252,8 @@ QVector<QVector<int>> SceneWithSquares::toAdjacencyMatrix()
         }
     }
 
-    return result;
+    m_cachedAdjMatrix = result; // cow!
+    return m_cachedAdjMatrix;
 }
 
 int SceneWithSquares::rowCount() const
@@ -236,9 +263,8 @@ int SceneWithSquares::rowCount() const
 
 int SceneWithSquares::colCount() const
 {
-    if (m_rects.empty()) {
+    if (m_rects.empty())
         return 0;
-    }
 
     return m_rects[0].size();
 }
@@ -248,56 +274,61 @@ int SceneWithSquares::colCount() const
 void SceneWithSquares::mouseMoveEvent(
     QGraphicsSceneMouseEvent* event)
 {
+    if (!m_autoFindPath) return;
+    if (m_begAndEnd.size() != 1) return;
+
+    hideShowedPath();
+
     auto const item = itemAt(event->lastScenePos(), {});
     auto const square = dynamic_cast<SquareItem*>(item);
 
     if (!square) return;
     if (isObstacleCell(square)) return;
 
-    if (m_begAndEnd.size() == 1) {
-        const QPair<int, int> coordVx{
-            getIndexFromCell(m_begAndEnd[0], rowCount(), colCount()),
-            getIndexFromCell(square, rowCount(), colCount())
-        };
+    // ***
 
-        if (m_cachedPaths.contains(coordVx)) {
-            reshowPath(m_cachedPaths[coordVx]);
+    const QPair<int, int> begAndEndVxs{
+        getIndexFromCell(m_begAndEnd[0], rowCount(), colCount()),
+        getIndexFromCell(square, rowCount(), colCount())
+    };
+
+    if (m_cachedPaths.contains(begAndEndVxs)) {
+        reshowPath(m_cachedPaths[begAndEndVxs]);
+        return;
+    }
+
+    // ***
+
+    const auto future = runPathFindingTask(
+        begAndEndVxs.first, begAndEndVxs.second
+        );
+
+    const auto fw = new QFutureWatcher<PathFindingRes>(this);
+    fw->setFuture(future);
+
+    // ***
+
+    const auto ok = connect(fw, &QFutureWatcher<QVector<int>>::finished,
+                            this, [this, begAndEndVxs]() -> void {
+        const auto fw = static_cast<QFutureWatcher<PathFindingRes>*>(sender());
+        const auto future = fw->future();
+        const auto futResult = future.result();
+
+        if (futResult.stateId != m_stateId) {
+            return;
+        }
+        if (!m_autoFindPath) {
             return;
         }
 
         // ***
 
-        const auto future = runPathFindingTask(
-                    coordVx.first, coordVx.second
-                    );
+        m_cachedPaths[begAndEndVxs] = futResult.path;
+        reshowPath(futResult.path);
+        fw->deleteLater();
+    });
 
-        const auto fw = new QFutureWatcher<PathFindingRes>(this);
-        fw->setFuture(future);
-
-        // ***
-
-        const auto ok = connect(fw, &QFutureWatcher<QVector<int>>::finished,
-                                this, [this, coordVx]() -> void {
-            const auto fw = static_cast<QFutureWatcher<PathFindingRes>*>(sender());
-            const auto f = fw->future();
-
-            const auto futResult = f.result();
-            if (futResult.stateId != m_stateId) {
-                return;
-            }
-
-            // ***
-
-            m_cachedPaths[coordVx] = futResult.path;
-
-            reshowPath(futResult.path);
-            fw->deleteLater();
-        });
-
-        Q_ASSERT(ok);
-    }
-
-    QGraphicsScene::mouseMoveEvent(event);
+    Q_ASSERT(ok);
 }
 
 void SceneWithSquares::onClicked_square()
@@ -338,36 +369,33 @@ void SceneWithSquares::onClicked_square()
 
     if (m_begAndEnd.size() == 2) {
         const auto future = runPathFindingTask(
-                    getIndexFromCell(m_begAndEnd[0], rowCount(), colCount()),
-                    getIndexFromCell(m_begAndEnd[1], rowCount(), colCount())
-                );
+            getIndexFromCell(m_begAndEnd[0], rowCount(), colCount()),
+            getIndexFromCell(m_begAndEnd[1], rowCount(), colCount())
+            );
 
         const auto fw = new QFutureWatcher<PathFindingRes>(this);
         fw->setFuture(future);
 
-        {
-            const auto ok = connect(fw, &QFutureWatcher<QVector<int>>::finished,
-                                    this, [this]() -> void {
-                const auto fw = static_cast<QFutureWatcher<PathFindingRes>*>(sender());
-                const auto f = fw->future();
+        const auto ok = connect(fw, &QFutureWatcher<QVector<int>>::finished,
+                                this, [this]() -> void {
+            const auto fw = static_cast<QFutureWatcher<PathFindingRes>*>(sender());
+            const auto future = fw->future();
+            const auto futResult = future.result();
 
-                const auto futResult = f.result();
-                if (futResult.stateId != m_stateId) {
-                    return;
-                }
+            if (futResult.stateId != m_stateId) {
+                return;
+            }
 
-                if (futResult.path.empty()) {
-                    emit pathNotFound(); // safe?
-                }
+            if (futResult.path.empty()) {
+                emit pathNotFound();
+            }
 
-                reshowPath(futResult.path);
-                fw->deleteLater();
-            });
+            reshowPath(futResult.path);
+            m_cachedPaths.clear();
+            fw->deleteLater();
+        });
 
-            Q_ASSERT(ok);
-        }
-
-        m_cachedPaths.clear();
+        Q_ASSERT(ok);
     }
 }
 
@@ -376,7 +404,7 @@ QFuture<SceneWithSquares::PathFindingRes> SceneWithSquares::runPathFindingTask(
 {
     return QtConcurrent::run(
                 [](
-                const QUuid stateId,
+                const int stateId,
                 const int beg, const int end,
                 QVector<QVector<int>> mx
                 ) -> PathFindingRes {
@@ -385,15 +413,14 @@ QFuture<SceneWithSquares::PathFindingRes> SceneWithSquares::runPathFindingTask(
         return { stateId, pathFinder.get(beg, end) };
 
     },
-    m_stateId, begVx, endVx,
-    toAdjacencyMatrix()); // copy or move? cow!
+        m_stateId, begVx, endVx,
+        toAdjacencyMatrix()); // copy or move? cow!
 }
 
 // -----------------------------------------------------------------------
 
 void SceneWithSquares::reshowPath(const QVector<int>& vec)
 {
-    QMutexLocker _{ &m_mxShowPath };
     hideShowedPath();
 
     m_showedPath = vec;
@@ -409,7 +436,6 @@ void SceneWithSquares::reshowPath(const QVector<int>& vec)
 
 void SceneWithSquares::hideShowedPath()
 {
-    QMutexLocker _{ &m_mxShowPath };
     if (m_showedPath.empty()) return;
 
     for (int i = 0; i < m_showedPath.size(); ++i) {
@@ -422,10 +448,11 @@ void SceneWithSquares::hideShowedPath()
                     ->setBrush(QBrush{ freeCellColor });
     }
 
+    // ***
+
     if (!m_begAndEnd.empty()) {
         for (int i = 0; i < m_begAndEnd.size(); ++i) {
-            m_begAndEnd[i]
-                    ->setBrush(QBrush{ pathCellColor });
+            m_begAndEnd[i]->setBrush(QBrush{ pathCellColor });
         }
     }
 

@@ -21,6 +21,10 @@ private slots:
 private slots:
     void test_SceneWithSquares_recreate();
     void test_SceneWithSquares_recreate_data();
+
+private slots:
+    void test_PathFinder_get();
+    void test_PathFinder_get_data();
 };
 
 

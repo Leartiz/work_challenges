@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "coordconverter.h"
 
 namespace CoordConverter
@@ -23,6 +25,7 @@ namespace CoordConverter
 
 */
 
+// if params invalid then undefined behavior...
 int pointToIndex(const QPoint& point, const int rowCount, const int colCount) {
     static_cast<void>(rowCount);
 
