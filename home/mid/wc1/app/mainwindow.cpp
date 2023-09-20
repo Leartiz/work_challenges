@@ -10,6 +10,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+const char* MainWindow::ConfigKey::winPos{ "win_pos" };
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
@@ -58,6 +60,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    // ***
+
+    m_settings = new QSettings(
+        "config.ini", QSettings::Format::IniFormat, this);
+
+    if (m_settings->contains(ConfigKey::winPos)) {
+        move(m_settings->value(ConfigKey::winPos).toPoint());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -105,6 +116,12 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 void MainWindow::moveEvent(QMoveEvent *event)
 {
     QMainWindow::moveEvent(event);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    m_settings->setValue(ConfigKey::winPos, pos());
+    event->accept();
 }
 
 void MainWindow::onClicked_pushBtnGenerate()

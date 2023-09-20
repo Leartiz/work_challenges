@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QSettings>
 #include <QMainWindow>
 
 #include "scenewithsquares.h"
@@ -13,6 +14,11 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    struct ConfigKey final
+    {
+        static const char* winPos;
+    };
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
@@ -21,6 +27,7 @@ public:
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void moveEvent(QMoveEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void onClicked_pushBtnGenerate();
@@ -30,6 +37,7 @@ private slots:
 private:
     Ui::MainWindow *m_ui;
     SceneWithSquares *m_scene;
+    QSettings* m_settings;
 };
 
 #endif // MAINWINDOW_H
