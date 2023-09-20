@@ -11,16 +11,17 @@ PathFinder::PathFinder(const QVector<QVector<int>>& matrix)
 
 QVector<int> PathFinder::get(const int beg, const int end) const
 {
-    const size_t n = m_matrix.size();
+    const size_t n =
+            m_matrix.size();
 
-    QVector<int> d(n), p(n);
+    QVector<int> p(n);
     p[beg] = -1;
-    QVector<bool> used(n, false);
+    QVector<bool> visited(n, false);
 
     QVector<int> q;
     q.push_back(beg);
 
-    used[beg] = true;
+    visited[beg] = true;
 
     int vis{ 0 };
     while (!q.empty()) {
@@ -31,23 +32,21 @@ QVector<int> PathFinder::get(const int beg, const int end) const
 
         for (int i = 0; i < m_matrix[vis].size(); ++i) {
             auto to = m_matrix[vis][i];
-            if (to == 1 && !used[i]) {
+            if (to == 1 && !visited[i]) {
                 q.push_back(i);
-                used[i] = true;
+                visited[i] = true;
 
-                d[i] = d[vis] + 1;
                 p[i] = vis;
             }
         }
     }
 
-    if (!used[end])
+    if (!visited[end])
         return {};
 
     QVector<int> path;
     for (int v = end; v != -1; v = p[v])
         path.push_back(v);
 
-    std::reverse(path.begin(), path.end());
     return path;
 }

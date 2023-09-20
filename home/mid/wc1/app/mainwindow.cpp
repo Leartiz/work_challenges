@@ -77,8 +77,8 @@ void MainWindow::wheelEvent(QWheelEvent *pWheelEvent)
     const QPointF targetScenePos = m_ui->graphicsView->mapToScene(
         targetViewportPos.toPoint());
 
-    m_ui->graphicsView->scale(factor, factor);
     m_ui->graphicsView->centerOn(targetScenePos);
+    m_ui->graphicsView->scale(factor, factor);
 
     const QPointF viewportCenterPos{
         m_ui->graphicsView->viewport()->width() / 2.0,
