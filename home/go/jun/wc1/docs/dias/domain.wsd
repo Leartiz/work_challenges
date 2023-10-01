@@ -1,0 +1,35 @@
+@startuml domain
+
+skinparam ArrowThickness 1.25
+skinparam ClassBorderThickness 1.5
+skinparam ClassBackgroundColor #FEFECE
+skinparam ClassBorderColor #B20842
+
+skinparam dpi 400
+skinparam Shadowing true
+
+hide empty members
+hide empty methods
+
+' -----------------------------------------------
+
+class Product {
+    Id: Number
+    Name: String
+    Quantity: Number
+    UnitCoast: Number
+    Measure: Measure
+}
+
+class Measure {
+    Id: Number
+    Name: String
+}
+
+' -----------------------------------------------
+
+left to right direction
+
+Product o-- Measure
+
+@enduml

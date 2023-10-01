@@ -1,0 +1,10 @@
+server:
+  http:
+    port: 8080
+
+storage:
+  sql:
+    postgre:
+      
+
+
