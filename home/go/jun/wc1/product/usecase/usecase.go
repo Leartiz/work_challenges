@@ -38,6 +38,17 @@ func (p *Product) GetConcreteProduct(ctx context.Context, id uint64) (*dto.Produ
 }
 
 func (p *Product) CreateProduct(ctx context.Context, reqDto *dto.CreateProductReq) (*dto.CreateProductRes, error) {
+	if len(reqDto.Name) < 2 {
+		return nil, product.ErrProductNameIsSmall()
+	}
+	if reqDto.Quantity < 0 {
+		return nil, product.ErrProductQuantityIsNegative()
+	}
+	if reqDto.UnitCoast < 0 {
+		return nil, product.ErrProductUnitCoastIsNegative()
+	}
+
+	// ***
 
 	// id will be ignored.
 	in := &domain.Product{
@@ -60,6 +71,18 @@ func (p *Product) CreateProduct(ctx context.Context, reqDto *dto.CreateProductRe
 }
 
 func (p *Product) PutConcreteProduct(ctx context.Context, id uint64, reqDto *dto.PutConcreteProductReq) error {
+	if reqDto.Name != nil && len(*reqDto.Name) < 2 {
+		return product.ErrProductNameIsSmall()
+	}
+	if reqDto.Quantity != nil && *reqDto.Quantity < 0 {
+		return product.ErrProductQuantityIsNegative()
+	}
+	if reqDto.UnitCoast != nil && *reqDto.UnitCoast < 0 {
+		return product.ErrProductUnitCoastIsNegative()
+	}
+
+	// ***
+
 	in := &domain.IncompleteProduct{
 		Name:      reqDto.Name,
 		Quantity:  reqDto.Quantity,
@@ -67,6 +90,7 @@ func (p *Product) PutConcreteProduct(ctx context.Context, id uint64, reqDto *dto
 	}
 
 	if reqDto.MeasureId != nil {
+		in.MeasureId = new(uint64)
 		*in.MeasureId = uint64(*reqDto.MeasureId)
 	}
 

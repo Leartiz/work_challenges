@@ -39,8 +39,9 @@ func (ms *MeasureStorage) GetMeasures(ctx context.Context) ([]*domain.Measure, e
 	if err != nil {
 		return nil, sharedStorage.ErrFailedToExecuteQuery()
 	}
-
 	defer rows.Close()
+
+	// ***
 
 	measures := []*domain.Measure{}
 	for rows.Next() {
