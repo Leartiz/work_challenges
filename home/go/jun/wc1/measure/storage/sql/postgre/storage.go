@@ -164,6 +164,8 @@ func (ms *MeasureStorage) DeleteConcreteMeasure(ctx context.Context, id uint64) 
 
 	// ***
 
+	// TODO: find out where the measurement is used!
+
 	textQuery := fmt.Sprintf(`delete from measure where id = %v;`, id)
 	_, err = conn.Exec(ctx, textQuery)
 	if err != nil {

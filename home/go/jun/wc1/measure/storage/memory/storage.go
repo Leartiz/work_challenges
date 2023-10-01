@@ -88,6 +88,8 @@ func (ms *MeasureStorage) DeleteConcreteMeasure(ctx context.Context, id uint64) 
 	ms.rwMutex.Lock()
 	defer ms.rwMutex.Unlock()
 
+	// TODO: find out where the measurement is used!
+
 	if _, ok := ms.measures[id]; ok {
 		delete(ms.measures, id)
 		return nil
