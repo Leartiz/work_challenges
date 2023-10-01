@@ -27,7 +27,7 @@ type App struct {
 
 func NewApp() *App {
 	compositeStorage := newCompositeStorage() // <-----
-	// 												  | move
+	//                                                | move
 	sharedStorage.Global = compositeStorage // --------
 
 	// ***
