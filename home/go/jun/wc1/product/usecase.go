@@ -5,6 +5,7 @@ import (
 	"wc1/product/dto"
 )
 
+// TODO: can it have more than one implementation?
 type UseCase interface {
 	GetProducts(ctx context.Context) ([]*dto.Product, error)
 	GetConcreteProduct(ctx context.Context, id uint64) (*dto.Product, error)

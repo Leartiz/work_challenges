@@ -13,3 +13,7 @@ func ErrParamMeasureIsNull() error {
 func ErrParamIncompleteMeasureIsNull() error {
 	return fmt.Errorf("param incomplete measure is null")
 }
+
+func ErrMeasureNameIsEmpty() error {
+	return fmt.Errorf("measure name is empty")
+}

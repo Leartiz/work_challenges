@@ -76,7 +76,7 @@ func (ms *MeasureStorage) PutConcreteMeasure(ctx context.Context, id uint64, inc
 	}
 
 	if val, ok := ms.measures[id]; ok {
-		editMeasure(val, incomplete)
+		domain.UpdateMeasure(val, incomplete)
 		ms.measures[id] = val
 		return nil
 	}
@@ -94,13 +94,4 @@ func (ms *MeasureStorage) DeleteConcreteMeasure(ctx context.Context, id uint64) 
 	}
 
 	return root.ErrMeasureWithIdNotFound(id)
-}
-
-// private
-// -----------------------------------------------------------------------
-
-func editMeasure(current *domain.Measure, incomplete *domain.IncompleteMeasure) {
-	if incomplete.Name != nil {
-		current.Name = *incomplete.Name
-	}
 }

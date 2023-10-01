@@ -5,9 +5,23 @@ import (
 	"wc1/product"
 )
 
-type CompositeStorage interface {
+type Composite interface {
 	ProductStorage() product.Storage
 	MeasureStorage() measure.Storage
 }
 
-var GlobalStorage CompositeStorage
+// -----------------------------------------------------------------------
+
+type Whole struct {
+	Product product.Storage
+	Measure measure.Storage
+}
+
+func (this *Whole) ProductStorage() product.Storage {
+	return this.Product
+}
+func (this *Whole) MeasureStorage() measure.Storage {
+	return this.Measure
+}
+
+var Global Composite

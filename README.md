@@ -15,3 +15,4 @@
 ## Go
 
 ### Junior
+- серверное приложение для работы с таблицами `Product` и `Measure` - [тут](./home/go/jun/wc1/NOTE.md)

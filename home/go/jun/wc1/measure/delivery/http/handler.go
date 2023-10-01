@@ -67,7 +67,7 @@ func (h *Handler) GetConcrete(ctx *gin.Context) {
 
 func (h *Handler) Create(ctx *gin.Context) {
 	reqDto := new(measureDto.CreateMeasureReq)
-	if err := ctx.BindJSON(reqDto); err != nil {
+	if err := ctx.BindJSON(&reqDto); err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}

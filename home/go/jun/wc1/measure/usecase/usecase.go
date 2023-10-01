@@ -38,6 +38,12 @@ func (m *Measure) GetConcreteMeasure(ctx context.Context, id uint64) (*dto.Measu
 }
 
 func (m *Measure) CreateMeasure(ctx context.Context, dtoReq *dto.CreateMeasureReq) (*dto.CreateMeasureRes, error) {
+	if len(dtoReq.Name) == 0 {
+		return nil, measure.ErrMeasureNameIsEmpty()
+	}
+
+	// ***
+
 	in := &domain.Measure{
 		Name: dtoReq.Name,
 	}
@@ -54,12 +60,18 @@ func (m *Measure) CreateMeasure(ctx context.Context, dtoReq *dto.CreateMeasureRe
 	return out, nil
 }
 
-func (m *Measure) PutConcreteMeasure(ctx context.Context, id uint64, dto *dto.PutMeasureReq) error {
-	one := &domain.IncompleteMeasure{
-		Name: dto.Name,
+func (m *Measure) PutConcreteMeasure(ctx context.Context, id uint64, dtoReq *dto.PutMeasureReq) error {
+	if len(*dtoReq.Name) == 0 {
+		return measure.ErrMeasureNameIsEmpty()
 	}
 
-	return m.storage.PutConcreteMeasure(ctx, id, one)
+	// ***
+
+	in := &domain.IncompleteMeasure{
+		Name: dtoReq.Name,
+	}
+
+	return m.storage.PutConcreteMeasure(ctx, id, in)
 }
 
 func (m *Measure) DeleteConcreteMeasure(ctx context.Context, id uint64) error {

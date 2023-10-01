@@ -39,6 +39,7 @@ func (p *Product) GetConcreteProduct(ctx context.Context, id uint64) (*dto.Produ
 
 func (p *Product) CreateProduct(ctx context.Context, reqDto *dto.CreateProductReq) (*dto.CreateProductRes, error) {
 
+	// id will be ignored.
 	in := &domain.Product{
 		Name:      reqDto.Name,
 		Quantity:  reqDto.Quantity,

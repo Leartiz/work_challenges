@@ -74,7 +74,7 @@ func (ps *ProductStorage) CreateProduct(ctx context.Context, product *domain.Pro
 	}
 
 	// TODO: create a special method to check.
-	measureStorage := sharedStorage.GlobalStorage.MeasureStorage()
+	measureStorage := sharedStorage.Global.MeasureStorage()
 	_, err := measureStorage.GetConcreteMeasure(ctx, product.MeasureId)
 	if err != nil {
 		return 0, err
@@ -96,7 +96,7 @@ func (ps *ProductStorage) PutConcreteProduct(ctx context.Context, id uint64, inc
 	}
 
 	if incomplete.MeasureId != nil {
-		measureStorage := sharedStorage.GlobalStorage.MeasureStorage()
+		measureStorage := sharedStorage.Global.MeasureStorage()
 		_, err := measureStorage.GetConcreteMeasure(ctx, *incomplete.MeasureId)
 		if err != nil {
 			return err
@@ -108,7 +108,7 @@ func (ps *ProductStorage) PutConcreteProduct(ctx context.Context, id uint64, inc
 			log.Fatalf("product with id %v in map is null", id)
 		}
 
-		editProduct(val, incomplete)
+		domain.UpdateProduct(val, incomplete)
 		ps.products[id] = val
 		return nil
 	}
@@ -126,22 +126,4 @@ func (ps *ProductStorage) DeleteConcreteProduct(ctx context.Context, id uint64) 
 	}
 
 	return root.ErrProductWithIdNotFound(id)
-}
-
-// private
-// -----------------------------------------------------------------------
-
-func editProduct(current *domain.Product, incomplete *domain.IncompleteProduct) {
-	if incomplete.Name != nil {
-		current.Name = *incomplete.Name
-	}
-	if incomplete.Quantity != nil {
-		current.Quantity = *incomplete.Quantity
-	}
-	if incomplete.UnitCoast != nil {
-		current.UnitCoast = *incomplete.UnitCoast
-	}
-	if incomplete.MeasureId != nil {
-		current.MeasureId = *incomplete.MeasureId
-	}
 }

@@ -1,10 +1,16 @@
 server:
   http:
-    port: 8080
+    port: "8080"
 
 storage:
-  sql:
-    postgre:
+  type: "postgre"
+
+  postgre:
+    user: "postgres"
+    pass: "admin"
+    dbname: "go_jun_wc1"
+    sslmode: "disable"
+
+  memory:
+
       
-
-

@@ -11,9 +11,11 @@ import (
 	productHttp "wc1/product/delivery/http"
 	productUc "wc1/product/usecase"
 	sharedStorage "wc1/shared/storage"
-	sharedStorageConcrete "wc1/shared/storage/memory"
+	sharedStorageMemory "wc1/shared/storage/memory"
+	sharedStoragePostgre "wc1/shared/storage/sql/postgre"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 type App struct {
@@ -24,8 +26,11 @@ type App struct {
 }
 
 func NewApp() *App {
-	compositeStorage := sharedStorageConcrete.Instance()
-	sharedStorage.GlobalStorage = compositeStorage
+	compositeStorage := newCompositeStorage() // <-----
+	// 												  |
+	sharedStorage.Global = compositeStorage // --------
+
+	// ***
 
 	productStorage := compositeStorage.ProductStorage()
 	measureStorage := compositeStorage.MeasureStorage()
@@ -38,7 +43,10 @@ func NewApp() *App {
 	}
 }
 
+// -----------------------------------------------------------------------
+
 func (a *App) Run(port string) {
+
 	router := gin.Default()
 	router.Use(gin.Recovery(), gin.Logger())
 
@@ -54,6 +62,23 @@ func (a *App) Run(port string) {
 	}
 
 	if err := a.httpSvr.ListenAndServe(); err != nil {
-		log.Fatalf("Failed to listen and serve: %+v", err)
+		log.Fatalf("failed to listen and serve: %v", err)
 	}
+}
+
+func (a *App) ClearEnv() {
+	sharedStoragePostgre.Clear()
+}
+
+// -----------------------------------------------------------------------
+
+func newCompositeStorage() sharedStorage.Composite {
+	if viper.GetString("storage.type") == "memory" {
+		return sharedStorageMemory.Instance()
+	} else if viper.GetString("storage.type") == "postgre" {
+		return sharedStoragePostgre.Instance()
+	}
+
+	log.Fatalf("unknown storage type")
+	return nil
 }
