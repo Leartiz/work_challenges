@@ -17,3 +17,7 @@ func ErrParamIncompleteMeasureIsNull() error {
 func ErrMeasureNameIsEmpty() error {
 	return fmt.Errorf("measure name is empty")
 }
+
+func ErrMeasurementUsedByProduct() error {
+	return fmt.Errorf("measurement used by some product")
+}

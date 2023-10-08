@@ -11,4 +11,5 @@ type Storage interface {
 	CreateProduct(ctx context.Context, product *domain.Product) (uint64, error)
 	PutConcreteProduct(ctx context.Context, id uint64, incomplete *domain.IncompleteProduct) error
 	DeleteConcreteProduct(ctx context.Context, id uint64) error
+	HasProductWhichUseMeasure(ctx context.Context, id uint64) (bool, error)
 }

@@ -127,3 +127,16 @@ func (ps *ProductStorage) DeleteConcreteProduct(ctx context.Context, id uint64) 
 
 	return root.ErrProductWithIdNotFound(id)
 }
+
+func (self *ProductStorage) HasProductWhichUseMeasure(ctx context.Context, measureId uint64) (bool, error) {
+	self.rwMutex.RLock()
+	defer self.rwMutex.RUnlock()
+
+	for _, val := range self.products {
+		if val.MeasureId == measureId {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}

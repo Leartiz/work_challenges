@@ -6,6 +6,7 @@ import (
 	"sync"
 	"wc1/domain"
 	root "wc1/measure"
+	sharedStorage "wc1/shared/storage"
 )
 
 type MeasureStorage struct {
@@ -88,7 +89,18 @@ func (ms *MeasureStorage) DeleteConcreteMeasure(ctx context.Context, id uint64) 
 	ms.rwMutex.Lock()
 	defer ms.rwMutex.Unlock()
 
-	// TODO: find out where the measurement is used!
+	// ***
+
+	productStorage := sharedStorage.Global.ProductStorage()
+	has, err := productStorage.HasProductWhichUseMeasure(ctx, id)
+	if err != nil {
+		return err
+	}
+	if has {
+		return root.ErrMeasurementUsedByProduct()
+	}
+
+	// ***
 
 	if _, ok := ms.measures[id]; ok {
 		delete(ms.measures, id)

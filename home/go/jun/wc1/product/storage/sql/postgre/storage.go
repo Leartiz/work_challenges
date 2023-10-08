@@ -211,3 +211,27 @@ func (ps *ProductStorage) DeleteConcreteProduct(ctx context.Context, id uint64) 
 
 	return nil
 }
+
+func (self *ProductStorage) HasProductWhichUseMeasure(ctx context.Context, measureId uint64) (bool, error) {
+	conn, err := self.pool.Acquire(ctx)
+	if err != nil {
+		return false, sharedStorage.ErrFailedToAccess()
+	}
+	defer conn.Release()
+
+	// ***
+
+	textQuery := fmt.Sprintf(
+		`select * from "product" where measure_id = %v;`,
+		measureId,
+	)
+	rows, err := conn.Query(ctx, textQuery)
+	if err != nil {
+		return false, sharedStorage.ErrFailedToExecuteQuery()
+	}
+	defer rows.Close()
+
+	// ***
+
+	return rows.Next(), nil
+}
