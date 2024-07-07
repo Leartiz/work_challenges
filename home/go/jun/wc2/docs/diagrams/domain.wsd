@@ -1,0 +1,25 @@
+@startuml domain
+
+class UserEntry {
+    id: Number
+    passportSeries: Number
+    passportNumber: Number
+    password: String
+}
+
+class User {
+    id: Number
+    name: String
+    surname: String
+    patronymic: String
+    address: String
+}
+
+class Task {
+    id: Number
+    userId: Number
+    beginTime: Time
+    endTime: Time
+}
+
+@enduml
