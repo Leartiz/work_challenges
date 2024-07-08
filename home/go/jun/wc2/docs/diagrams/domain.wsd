@@ -1,13 +1,17 @@
 @startuml domain
 
+hide empty methods
+hide empty fields
+
 class UserEntry {
     id: Number
     passportSeries: Number
     passportNumber: Number
-    password: String
+    passwordHash: String
+    refreshTokenHash: String
 }
 
-class User {
+class UserPersonal {
     id: Number
     name: String
     surname: String
@@ -18,8 +22,12 @@ class User {
 class Task {
     id: Number
     userId: Number
-    beginTime: Time
-    endTime: Time
+    timeOfCreation: Time
+    startTime: Time
+    stopTime: Time
 }
+
+UserPersonal --> UserEntry
+Task --> UserEntry
 
 @enduml

@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16.3-alpine3.19
+    hostname: ${POSTGRES_HOST}
+    container_name: ${POSTGRES_HOST}
+    restart: always
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=md5
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+    ports:
+      - "${EXTERNAL_POSTGRES_PORT}:${POSTGRES_PORT}"
+    networks:
+      - postgres_net
+      - all_net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username=${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrate:  
+    image: migrate/migrate
+    restart: no
+    command: [
+      "-path=/migrations", "-verbose", "-database",
+      "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}\
+      @${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB_NAME}?sslmode=disable",
+      "up"
+    ]
+    volumes:
+      - ${MIGRATIONS_SCRIPTS}:/migrations
+    networks:
+      - postgres_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  tt: 
+    build: .
+    restart: always
+    networks:
+      - all_net
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+networks:
+  postgres_net: 
+    driver: bridge
+  all_net:
+    driver: bridge
