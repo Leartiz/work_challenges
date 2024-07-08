@@ -9,7 +9,7 @@ CREATE TABLE user_entry (
         (passport_series, passport_number)
 );
 
-CREATE TABLE user_personal (
+CREATE TABLE user_data (
     id int8 not null,
     name varchar(255) not null default '',
     surname varchar(255) not null default '',

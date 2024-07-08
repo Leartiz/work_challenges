@@ -1,4 +1,4 @@
-package domain
+package table
 
 type UserEntry struct {
 	Id             uint64

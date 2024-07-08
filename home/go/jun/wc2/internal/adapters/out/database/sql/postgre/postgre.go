@@ -29,7 +29,7 @@ func (params *ConnectionParamsWithDb) CreateConnectionString() string {
 // -----------------------------------------------------------------------
 
 type Postgre struct {
-	*User
+	*UserDatabase
 	pool *pgxpool.Pool
 }
 
@@ -40,7 +40,7 @@ func New(startCtx context.Context, params ConnectionParamsWithDb) (*Postgre, err
 	}
 
 	return &Postgre{
-		User: newUser(pool),
+		UserDatabase: newUser(pool),
 	}, nil
 }
 

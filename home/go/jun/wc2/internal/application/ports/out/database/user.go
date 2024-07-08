@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"wc2/internal/application/domain"
+	"wc2/internal/application/domain/table"
 )
 
 // -----------------------------------------------------------------------
@@ -35,13 +35,15 @@ type UserOptionalData struct {
 // -----------------------------------------------------------------------
 
 type User interface {
-	GetUserData(ctx context.Context, p Passport) (*domain.UserData, error) // info
-	GetUserDataList(ctx context.Context, ff UserDataGettingFilter) ([]*domain.UserData, error)
+	GetUserData(ctx context.Context, p Passport) (*table.UserData, error)
+	GetUserDataList(ctx context.Context, filter UserDataGettingFilter) ([]*table.UserData, error)
 
 	CreateUser(ctx context.Context, cred Credentials) (uint64, error)
 	HasUserByCredentials(ctx context.Context, cred Credentials) (bool, error)
 
 	UpdateRefreshTokenHash(ctx context.Context, userId uint64, val string) error
+	UpdatePasswordHash(ctx context.Context, userId uint64, passwordHash string) error
 	UpdateUserData(ctx context.Context, userId uint64, p UserOptionalData) error
+
 	DeleteUser(ctx context.Context, userId uint64) error
 }

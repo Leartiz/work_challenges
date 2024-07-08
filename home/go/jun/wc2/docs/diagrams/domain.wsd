@@ -3,6 +3,9 @@
 hide empty methods
 hide empty fields
 
+' nodes
+' -----------------------------------------------
+
 class UserEntry {
     id: Number
     passportSeries: Number
@@ -11,7 +14,7 @@ class UserEntry {
     refreshTokenHash: String
 }
 
-class UserPersonal {
+class UserData {
     id: Number
     name: String
     surname: String
@@ -27,7 +30,10 @@ class Task {
     stopTime: Time
 }
 
-UserPersonal --> UserEntry
+' edges
+' -----------------------------------------------
+
+UserData --> UserEntry
 Task --> UserEntry
 
 @enduml

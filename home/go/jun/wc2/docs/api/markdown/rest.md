@@ -4,7 +4,7 @@
 - [User](./group/user.md)
 - [Task](./group/task.md)
 
-# Common Responses
+# Common Error Responses
 
 - 400
 ```Txt
@@ -17,7 +17,7 @@ Internal server error
 ```
 
 <!-- From Swagger Challenge -->
-<!-- --------------------------------------------------------------------- -->
+<!-- -------------------------------------------- -->
 
 # GET /info
 > People info

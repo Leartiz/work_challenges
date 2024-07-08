@@ -1,5 +1,5 @@
 <!-- User -->
-<!-- --------------------------------------------------------------------- -->
+<!-- -------------------------------------------- -->
 
 # GET /api/user 
 > People info
@@ -8,8 +8,10 @@
 
 | Name | Type | Required |
 | ---- | ---- | -------- |
+| | | |
 | passportSeries | integer | false |
 | passportNumber | integer | false |
+| | | |
 | name | string | false |
 | surname | string | false |
 | patronymic | string | false |
@@ -24,6 +26,7 @@
 {
     "people": [ 
         {
+            "id": "<number>",
             "name": "<string>",
             "surname": "<string>",
             "patronymic": "<string>",
@@ -34,7 +37,7 @@
 }
 ```
 
-<!-- --------------------------------------------------------------------- -->
+<!-- -------------------------------------------- -->
 
 # GET /api/account
 
@@ -48,6 +51,7 @@
 - 200
 ```json
 {
+    "id": "<number>",
     "name": "<string>", 
     "surname": "<string>", 
     "patronymic": "<string>", 
@@ -75,6 +79,27 @@
 
 ## Responses
 - 200
+
+# PUT /api/account/password
+
+## Header
+
+| Name | Value |
+| ---- | ----- | 
+| Authorization | Bearer `<jwt-string>` |
+
+## Body
+```json
+{
+    "password": "<string>",
+    "new-password": "<string>"
+}
+```
+
+## Responses
+- 200
+
+<!-- -------------------------------------------- -->
 
 # DELETE /api/account
 
