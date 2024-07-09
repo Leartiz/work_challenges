@@ -44,3 +44,15 @@ func RemoveAdjacentSpacesFromString(text string) string {
 func RemoveAdjacentWs(text string) string {
 	return RemoveAdjacentSpacesFromString(text)
 }
+
+type FuncReturningError = func() error
+
+func RunFuncsRetErr(ff ...FuncReturningError) error {
+	for _, f := range ff {
+		if err := f(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

@@ -1,4 +1,3 @@
 DROP TABLE IF EXISTS 
     task, 
-    user_personal, 
-    user_entry;
+    user_data, user_entry;

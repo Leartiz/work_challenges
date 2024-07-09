@@ -26,10 +26,10 @@ type Credentials struct {
 }
 
 type UserOptionalData struct {
-	Name       *string
-	Surname    *string
-	Patronymic *string
-	Address    *string
+	Name       *string `db:"name" goqu:"omitnil"`
+	Surname    *string `db:"surname" goqu:"omitnil"`
+	Patronymic *string `db:"patronymic" goqu:"omitnil"`
+	Address    *string `db:"address" goqu:"omitnil"`
 }
 
 // -----------------------------------------------------------------------

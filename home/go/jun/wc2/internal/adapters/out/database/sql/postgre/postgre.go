@@ -2,45 +2,28 @@ package postgre
 
 import (
 	"context"
-	"fmt"
+	"wc2/internal/adapters/out/database/sql/postgre/internal"
+	"wc2/pkg/postgreUtils"
 	"wc2/pkg/utils"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-type ConnectionParamsWithDb struct {
-	Username     string
-	Password     string
-	Host         string
-	Port         uint16
-	DatabaseName string
-}
-
-func (params *ConnectionParamsWithDb) CreateConnectionString() string {
-	return fmt.Sprintf(
-		"user=%v password=%v "+
-			"host=%v port=%v database=%v",
-		params.Username, params.Password,
-		params.Host, params.Port,
-		params.DatabaseName,
-	)
-}
-
-// -----------------------------------------------------------------------
-
 type Postgre struct {
-	*UserDatabase
+	*internal.UserDatabase
 	pool *pgxpool.Pool
 }
 
-func New(startCtx context.Context, params ConnectionParamsWithDb) (*Postgre, error) {
+func New(startCtx context.Context,
+	params postgreUtils.ConnectionParamsWithDb) (*Postgre, error) {
+
 	pool, err := pgxpool.Connect(startCtx, params.CreateConnectionString())
 	if err != nil {
 		return nil, utils.NewFuncError(New, err)
 	}
 
 	return &Postgre{
-		UserDatabase: newUser(pool),
+		UserDatabase: internal.NewUserDatabase(pool),
 	}, nil
 }
 
