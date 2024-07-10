@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/spf13/viper"
@@ -25,6 +26,7 @@ func MakeConfigFromViper() Config {
 			ReadTimeout:  viper.GetDuration("adapters.in.http.read_timeout"),
 			WriteTimeout: viper.GetDuration("adapters.in.http.write_timeout"),
 		},
+
 		PostgreDatabaseOutAdapter: PostgreDatabaseOutAdapter{
 			Host:     viper.GetString("adapters.out.database.sql.postgre.host"),
 			Port:     viper.GetUint16("adapters.out.database.sql.postgre.port"),
@@ -36,8 +38,12 @@ func MakeConfigFromViper() Config {
 }
 
 const (
-	EnvPrefix = "TT"
+	EnvPrefix = "TIME_TRACKER"
 )
+
+func envar(name string) string {
+	return fmt.Sprintf("%v_%v", EnvPrefix, name)
+}
 
 func (c *Config) MergeWithEnv() {
 
