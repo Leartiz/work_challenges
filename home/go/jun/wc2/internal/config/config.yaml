@@ -1,13 +1,20 @@
-
+start_timeout: 5s
+stop_timeout: 5s
 
 adapters:
+  in: 
+    http:
+      host: localhost
+      port: 55554
+      read_timeout: 5s
+      write_timeout: 5s
+
   out:
     database:
       sql:
         postgre:
           host: "127.0.0.1"
           port: 5432
-
           user: "postgres"
           password: "admin"
           database: "time_tracker"

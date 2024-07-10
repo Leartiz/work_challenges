@@ -71,7 +71,7 @@ func setup() {
 
 	// ***
 
-	pool, err := pgxpool.Connect(globalCtx,
+	pool, err = pgxpool.Connect(ctx,
 		params.CreateConnectionString())
 	if err != nil {
 		log.Fatal(err)
@@ -88,9 +88,11 @@ func teardown() {
 }
 
 var (
+	err error
+	ctx context.Context = context.Background()
+
 	pool         *pgxpool.Pool
 	userDatabase *UserDatabase
-	globalCtx    context.Context = context.Background()
 )
 
 func Test_GetUserDataList(t *testing.T) {
@@ -101,7 +103,7 @@ func Test_GetUserDataList(t *testing.T) {
 	*filter.PassportSeries = 1
 	*filter.PassportNumber = 3
 
-	udList, err := userDatabase.GetUserDataList(globalCtx, filter)
+	udList, err := userDatabase.GetUserDataList(ctx, filter)
 	if err != nil {
 		t.Error(err)
 		return
@@ -110,4 +112,21 @@ func Test_GetUserDataList(t *testing.T) {
 	for i := 0; i < len(udList); i++ {
 		log.Println(udList[i])
 	}
+}
+
+func Test_userDataGettingFilterToSelectDataset(t *testing.T) {
+	selectDataset := goqu.From(tableUserEntry).InnerJoin(
+		goqu.T(tableUserData),
+		goqu.On(goqu.Ex{tableUserEntry + ".id": goqu.I(tableUserData + ".id")}))
+	var filter = database.UserDataGettingFilter{
+		PassportSeries: new(uint32),
+		PassportNumber: new(uint32)}
+	*filter.PassportSeries = 2
+	*filter.PassportNumber = 5
+	//...
+
+	selectDataset = userDataGettingFilterToSelectDataset(
+		filter, selectDataset)
+
+	fmt.Println(selectDataset.ToSQL())
 }
