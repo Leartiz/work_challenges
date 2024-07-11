@@ -1,13 +1,20 @@
 {
     "cSpell.words": [
+        "Debugf",
+        "edoger",
         "envar",
         "gonic",
         "goqu",
+        "Infof",
         "jackc",
         "omitnil",
         "openapi",
         "pgxpool",
         "postgre",
-        "usecases"
+        "Tracef",
+        "usecase",
+        "usecases",
+        "Warnf",
+        "zkits"
     ]
 }

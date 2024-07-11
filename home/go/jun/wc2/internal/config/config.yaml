@@ -1,6 +1,22 @@
 start_timeout: 5s
 stop_timeout: 5s
 
+log:
+  name: time_tracker
+  level: 0
+  format: text
+  console:
+    enable: true
+  file:
+    enable: true
+    name: actions.log
+    dir:
+      name: ./rot
+    rotation:
+      enable: true
+      count: 5
+      size_kb: 25000
+
 adapters:
   in: 
     http:

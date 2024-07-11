@@ -31,7 +31,9 @@ func Init() (*Config, error) {
 	// ***
 
 	c := MakeConfigFromViper()
-	c.MergeWithEnv()
+	if err := c.MergeWithEnv(); err != nil {
+		return nil, utils.NewFuncError(Init, err)
+	}
 
 	return &c, nil
 }
