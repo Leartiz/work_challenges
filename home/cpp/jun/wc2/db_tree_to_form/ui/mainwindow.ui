@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>db_tree_to_form</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../rec.qrc">
+    <normaloff>:/img/img/tree.png</normaloff>:/img/img/tree.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="title">
+       <string>Дерево</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QTreeView" name="treeView"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuControl">
+    <property name="title">
+     <string>Управление</string>
+    </property>
+    <addaction name="actionAddRow"/>
+    <addaction name="actionRmvRow"/>
+    <addaction name="actionAddChild"/>
+    <addaction name="separator"/>
+    <addaction name="actionCancelSelection"/>
+   </widget>
+   <widget class="QMenu" name="menuDatabase">
+    <property name="title">
+     <string>База данных</string>
+    </property>
+    <addaction name="actionUpdView"/>
+    <addaction name="separator"/>
+    <addaction name="actionChgConct"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuControl"/>
+   <addaction name="menuDatabase"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../rec.qrc">
+     <normaloff>:/img/img/exit.png</normaloff>:/img/img/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="actionAddRow">
+   <property name="text">
+    <string>Добавить строку</string>
+   </property>
+  </action>
+  <action name="actionAddChild">
+   <property name="text">
+    <string>Добавить потомка</string>
+   </property>
+  </action>
+  <action name="actionCancelSelection">
+   <property name="text">
+    <string>Отменить выделение</string>
+   </property>
+  </action>
+  <action name="actionRmvRow">
+   <property name="text">
+    <string>Удалить строку</string>
+   </property>
+  </action>
+  <action name="actionUpdView">
+   <property name="icon">
+    <iconset resource="../rec.qrc">
+     <normaloff>:/img/img/upd_tree.png</normaloff>:/img/img/upd_tree.png</iconset>
+   </property>
+   <property name="text">
+    <string>Обновить представление</string>
+   </property>
+  </action>
+  <action name="actionChgConct">
+   <property name="icon">
+    <iconset resource="../rec.qrc">
+     <normaloff>:/img/img/database.png</normaloff>:/img/img/database.png</iconset>
+   </property>
+   <property name="text">
+    <string>Изменить подключение</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../rec.qrc"/>
+ </resources>
+ <connections/>
+</ui>

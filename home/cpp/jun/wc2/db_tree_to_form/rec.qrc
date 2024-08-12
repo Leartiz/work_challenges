@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/tree.png</file>
+        <file>img/exit.png</file>
+        <file>img/database.png</file>
+        <file>img/upd_tree.png</file>
+    </qresource>
+</RCC>
