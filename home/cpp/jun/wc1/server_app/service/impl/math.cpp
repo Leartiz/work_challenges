@@ -10,7 +10,7 @@ namespace lez
 	{
 		namespace impl
 		{
-			double math::calc_expr(const std::string& expr_string) /* wrap */
+			double Math::calculate_expression(const std::string& expr_string) /* wrap */
 			{
 				using namespace exprtk;
 

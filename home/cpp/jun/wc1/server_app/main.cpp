@@ -3,21 +3,21 @@
 
 #include <boost/asio.hpp>
 
+#include "service/service.h"
 #include "service/impl/math.h"
-#include "delivery/tcp/handler.h"
-#include "server/tcp/math_lsnr.h"
+
+#include "adapters/interfaces/tcp/listener.h""
 
 int main() /* or wrap in a class: App */ 
 { 
 	try {
 		/* deps */
-		lez::service::impl::math math;
-		lez::delivery::tcp::handler h{ math };
+		lez::service::impl::Math math_service;
 
 		// ***
 
 		boost::asio::io_context ioc;
-		lez::server::tcp::math_lsnr tcp_mlsnr(ioc, h, 24444);
+		lez::adapters::interfaces::tcp::Listener listener(ioc, math_service, 24444);
 
 		std::cout << "Listen on: " << 24444;
 		ioc.run();

@@ -8,13 +8,12 @@ namespace lez
 	{
 		namespace impl
 		{
-			struct math : contract::math
+			class Math : public contract::Math
 			{
-				double calc_expr(const std::string&) override;
-				~math() override {};
+			public:
+				double calculate_expression(const std::string&) override;
+				~Math() override {};
 			};
 		}
 	}
 }
-
-
