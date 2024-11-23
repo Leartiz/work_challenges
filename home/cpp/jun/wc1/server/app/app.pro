@@ -19,11 +19,25 @@ win32: {
 
 } else: unix: {
     INCLUDEPATH += \
-        /usr/include \ # /usr/include/boost!
         /usr/include/lua5.4 \
         $$PWD/../dependency
 
-    LIBS += -L"/usr/lib/x86_64-linux-gnu"
+    LIBS += -llua5.4
+
+    BOOST_INCLUDE_DIR=$$getenv(BOOST_INCLUDE_DIR)
+    BOOST_LIBRARY_DIR=$$getenv(BOOST_LIBRARY_DIR)
+
+    INCLUDEPATH += \
+        $$BOOST_INCLUDE_DIR
+
+    LIBS += \
+        -L$$BOOST_LIBRARY_DIR \
+        -lboost_system \
+        -lboost_filesystem \
+        -lboost_thread \
+        -lboost_date_time \
+        -lboost_log_setup \
+        -lboost_log
 }
 
 SOURCES += \

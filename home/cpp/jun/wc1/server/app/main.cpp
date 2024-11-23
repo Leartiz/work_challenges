@@ -51,14 +51,14 @@ int main() /* or wrap in a class: App */
 
         /* logger */
 
-        initialize_logging();
+        // initialize_logging();
 
-        BOOST_LOG_TRIVIAL(trace)   << "trace";
-        BOOST_LOG_TRIVIAL(debug)   << "debug";
-        BOOST_LOG_TRIVIAL(info)    << "info";
-        BOOST_LOG_TRIVIAL(warning) << "warning";
-        BOOST_LOG_TRIVIAL(error)   << "error";
-        BOOST_LOG_TRIVIAL(fatal)   << "fatal";
+        // BOOST_LOG_TRIVIAL(trace)   << "trace";
+        // BOOST_LOG_TRIVIAL(debug)   << "debug";
+        // BOOST_LOG_TRIVIAL(info)    << "info";
+        // BOOST_LOG_TRIVIAL(warning) << "warning";
+        // BOOST_LOG_TRIVIAL(error)   << "error";
+        // BOOST_LOG_TRIVIAL(fatal)   << "fatal";
 
         /* deps */
         Lua_math math_service;

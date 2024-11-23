@@ -2,6 +2,7 @@
     "cSpell.words": [
         "libboost",
         "liblua",
+        "llua",
         "qtbase"
     ]
 }
