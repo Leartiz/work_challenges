@@ -21,8 +21,8 @@ namespace lez
 				Client_connection::ptr
 					Client_connection::create(io_context& ioc, math_service& math_service)
 				{
-					return std::make_shared<Client_connection>(
-						ioc, math_service);
+                    return std::shared_ptr<Client_connection>(
+                        new Client_connection(ioc, math_service));
 				}
 
 				Client_connection::tcp_socket&
@@ -71,8 +71,7 @@ namespace lez
 					size_t bytes_transferred)
 				{
 					m_deadline_timer.cancel();
-					if (err) {
-						// TODO: добавить запись в лог-файл
+                    if (err) {
 						m_tcp_socket.close();
 						return;
 					}
@@ -90,23 +89,23 @@ namespace lez
 				void Client_connection::write_handler(const error_code& err,
 					size_t bytes_transferred)
 				{
-					m_timr.cancel();
-					if (err) {
-						m_sock.close();
-						return;
-					}
+                    // m_timr.cancel();
+                    // if (err) {
+                    // 	m_sock.close();
+                    // 	return;
+                    // }
 
-					std::cout << "wrtd: " << m_rw_msg << std::endl;
-					reg_read();
+                    // std::cout << "wrtd: " << m_rw_msg << std::endl;
+                    // reg_read();
 				}
 
 				void Client_connection::deadline_handler(const error_code& err)
 				{
-					std::cerr << "handle_wait";
-					if (err) {
-						std::cerr << "ERR";
-					}
-					m_sock.close();
+                    // std::cerr << "handle_wait";
+                    // if (err) {
+                    // 	std::cerr << "ERR";
+                    // }
+                    // m_sock.close();
 				}
 			}
 		}

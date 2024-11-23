@@ -21,7 +21,7 @@ namespace lez
                         return Listener::tcp_endpoint{ boost::asio::ip::tcp::v4(), port };
                     }
 
-                    Listener::tcp_endpoint make_tcp_endpoint(const std::string str_ip, 
+                    Listener::tcp_endpoint make_tcp_endpoint(const std::string& str_ip,
                         const uint16_t port)
                     {
                         const auto ip = boost::asio::ip::address::from_string(str_ip);
