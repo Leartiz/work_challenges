@@ -23,9 +23,7 @@ win32: {
         /usr/include/lua5.4 \
         $$PWD/../dependency
 
-    LIBS += -lboost_system
-    LIBS += -lboost_filesystem
-    LIBS += -llua5.4
+    LIBS += -L"/usr/lib/x86_64-linux-gnu"
 }
 
 SOURCES += \

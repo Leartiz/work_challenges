@@ -21,8 +21,9 @@ WORKDIR /wc1
 COPY . .
 
 RUN qmake --version
-RUN qmake server.pro
 
-RUN make -d
+WORKDIR /wc1/app
+RUN qmake 
+RUN make
 
 CMD ["./main"]
