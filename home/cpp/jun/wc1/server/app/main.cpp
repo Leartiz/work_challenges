@@ -12,9 +12,16 @@
 #include "service/impl/lua_math.h"
 #include "adapters/interfaces/tcp/listener.h"
 
+#include "laserpants/dotenv/dotenv.h"
+
+// -----------------------------------------------------------------------
+
 void initialize_config()
 {
+    dotenv::init();
 
+    std::string port = dotenv::getenv("PORT");
+    std::cout << "port: " << port << std::endl;
 }
 
 void initialize_logging()
@@ -49,16 +56,18 @@ int main() /* or wrap in a class: App */
 	try {
         /* config */
 
+        initialize_config();
+
         /* logger */
 
-        // initialize_logging();
+        initialize_logging();
 
-        // BOOST_LOG_TRIVIAL(trace)   << "trace";
-        // BOOST_LOG_TRIVIAL(debug)   << "debug";
-        // BOOST_LOG_TRIVIAL(info)    << "info";
-        // BOOST_LOG_TRIVIAL(warning) << "warning";
-        // BOOST_LOG_TRIVIAL(error)   << "error";
-        // BOOST_LOG_TRIVIAL(fatal)   << "fatal";
+        BOOST_LOG_TRIVIAL(trace)   << "trace";
+        BOOST_LOG_TRIVIAL(debug)   << "debug";
+        BOOST_LOG_TRIVIAL(info)    << "info";
+        BOOST_LOG_TRIVIAL(warning) << "warning";
+        BOOST_LOG_TRIVIAL(error)   << "error";
+        BOOST_LOG_TRIVIAL(fatal)   << "fatal";
 
         /* deps */
         Lua_math math_service;
@@ -68,6 +77,7 @@ int main() /* or wrap in a class: App */
 		boost::asio::io_context ioc;
         Listener listener(ioc, math_service, 24444);
 		ioc.run();
+        
 	}
     catch (const std::exception& ex) {
 		std::cerr << "err: " << ex.what() << std::endl;

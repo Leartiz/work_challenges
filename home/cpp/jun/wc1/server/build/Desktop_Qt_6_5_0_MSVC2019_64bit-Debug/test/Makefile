@@ -214,6 +214,7 @@ Makefile: ..\..\..\test\test.pro C:\Qt\6.5.0\msvc2019_64\mkspecs\win32-msvc\qmak
 		C:\Qt\6.5.0\msvc2019_64\mkspecs\features\toolchain.prf \
 		C:\Qt\6.5.0\msvc2019_64\mkspecs\features\default_pre.prf \
 		C:\Qt\6.5.0\msvc2019_64\mkspecs\features\win32\default_pre.prf \
+		..\..\..\pri_files\common_deps.pri \
 		C:\Qt\6.5.0\msvc2019_64\mkspecs\features\resolve_config.prf \
 		C:\Qt\6.5.0\msvc2019_64\mkspecs\features\exclusive_builds_post.prf \
 		C:\Qt\6.5.0\msvc2019_64\mkspecs\features\default_post.prf \
@@ -371,6 +372,7 @@ C:\Qt\6.5.0\msvc2019_64\mkspecs\common\msvc-version.conf:
 C:\Qt\6.5.0\msvc2019_64\mkspecs\features\toolchain.prf:
 C:\Qt\6.5.0\msvc2019_64\mkspecs\features\default_pre.prf:
 C:\Qt\6.5.0\msvc2019_64\mkspecs\features\win32\default_pre.prf:
+..\..\..\pri_files\common_deps.pri:
 C:\Qt\6.5.0\msvc2019_64\mkspecs\features\resolve_config.prf:
 C:\Qt\6.5.0\msvc2019_64\mkspecs\features\exclusive_builds_post.prf:
 C:\Qt\6.5.0\msvc2019_64\mkspecs\features\default_post.prf:

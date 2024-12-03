@@ -19,27 +19,34 @@ RUN tar -xvzf boost_1_86_0.tar.gz
 
 RUN cd boost_1_86_0 && \
     ./bootstrap.sh && \
-    ./b2 && \
-    cd .. && \
-    rm -rf boost_1_86_0 boost_1_86_0.tar.gz
+    ./b2 toolset=gcc threading=multi link=shared,static --prefix=/usr/local && \
+    cd ..
+RUN rm -rf boost_1_86_0.tar.gz
 
 # ***
 
-ENV BOOST_ROOT=/boost_1_86_0
-ENV BOOST_INCLUDE_DIR=$BOOST_ROOT
-ENV BOOST_LIBRARY_DIR=$BOOST_ROOT/state/lib
+ENV BOOST_INCLUDE_DIR=/boost_1_86_0
+ENV BOOST_LIBRARY_DIR=/boost_1_86_0/stage/lib
 
 ENV PATH="/usr/lib/qt6/bin:${PATH}"
 
 # ***
 
+RUN echo "Boost dir contents:" && \
+    ls -al /boost_1_86_0/stage/lib
+
 WORKDIR /wc1
 COPY . .
 
-RUN qmake --version
+RUN echo "qmake version:" && \
+    qmake --version
 
-WORKDIR /wc1/app
-RUN qmake 
+ENV CC=gcc
+ENV CXX=g++
+
+# Application only!
+WORKDIR /wc1/app 
+RUN qmake CONFIG+=release
 RUN make
 
 CMD ["./app"]
