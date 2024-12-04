@@ -438,6 +438,7 @@ ui_*.h
 *.qmlc
 *.jsc
 *build-*
+*build*
 *.qm
 *.prl
 

@@ -3,6 +3,7 @@
 #include <boost/bind.hpp>
 
 #include "listener.h"
+#include "logging/logging.h"
 
 namespace lez
 {
@@ -67,8 +68,7 @@ namespace lez
                     const boost::system::error_code& err)
                 {
                     if (err) {
-                        std::cerr << "math_server, handle_accept, err: "
-                            << err.message() << std::endl;
+                        logging::error("math_server, handle_accept, err: " + err.message());
                     }
 
                     new_connection->start();

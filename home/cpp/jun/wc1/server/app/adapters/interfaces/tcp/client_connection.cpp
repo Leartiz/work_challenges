@@ -4,6 +4,7 @@
 #include <boost/bind.hpp>
 
 #include "client_connection.h"
+#include "logging/logging.h"
 
 namespace lez
 {
@@ -77,8 +78,7 @@ namespace lez
 					}
 
 
-
-					std::cout << "redd: " << m_rw_message << std::endl;
+                    logging::info("read: " + m_rw_message);
 
 					// router
 
