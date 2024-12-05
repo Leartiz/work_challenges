@@ -44,7 +44,7 @@ namespace lez
         void set_logger(std::shared_ptr<Logger> logger);
         std::shared_ptr<Logger> get_logger();
 
-        // mt unsafe!
+        // global mt unsafe!?
         // ---------------------------------------------------------------
 
         void trace(const std::string& message);
