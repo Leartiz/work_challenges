@@ -28,3 +28,15 @@ HEADERS += \
 
 OTHER_FILES += \
     $$PWD/../.env
+
+# ------------------------------------------------------------------------
+
+message("Pwd: $$PWD")
+message("Assembly Catalog: $$OUT_PWD")
+
+ENV_FILE = $$PWD/../.env
+
+win32: {
+    message("Copying a file: $$ENV_FILE to folder: $$OUT_PWD")
+    QMAKE_POST_LINK = copy /Y "$$ENV_FILE" "$$OUT_PWD"
+}

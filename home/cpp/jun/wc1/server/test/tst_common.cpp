@@ -1,3 +1,4 @@
+#include <any>
 #include <string>
 #include <sstream>
 #include <memory>
@@ -5,6 +6,7 @@
 #include <QDebug>
 
 #include <lua.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "tst_common.h"
 
@@ -97,7 +99,18 @@ void Common::test_Lua_math_calculate_expression()
     QCOMPARE(m->calculate_expression(expression), result);
 }
 
-// experiments
+// std library
+// -----------------------------------------------------------------------
+
+void Common::test_std_any_to_string()
+{
+    std::any a = std::string("any string");
+    std::ostringstream sout;
+    sout << std::any_cast<std::string>(a);
+    qDebug() << sout.str();
+}
+
+// experiments with some dependencies
 // -----------------------------------------------------------------------
 
 void Common::test_lua_calculate_expression()
@@ -150,6 +163,32 @@ void Common::test_nlohmann_json()
 
     qDebug() << "pi_val:" << pi_val;
     qDebug() << "happy_val:" << happy_val;
+}
+
+// -----------------------------------------------------------------------
+
+void Common::test_boost_lexical_cast_data()
+{
+    QTest::addColumn<std::string>("input");
+    QTest::addColumn<bool>("expected");
+
+    // ***
+
+    QTest::newRow("true 1") << std::string("1") << true;
+    QTest::newRow("false 0") << std::string("0") << false;
+
+    /*
+        QTest::newRow("true") << std::string("true") << true;
+        QTest::newRow("false") << std::string("false") << false;
+    */
+}
+
+void Common::test_boost_lexical_cast()
+{
+    QFETCH(std::string, input);
+    QFETCH(bool, expected);
+
+    QCOMPARE(boost::lexical_cast<bool>(input), expected);
 }
 
 QTEST_APPLESS_MAIN(Common)

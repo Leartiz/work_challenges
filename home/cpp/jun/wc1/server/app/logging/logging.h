@@ -2,14 +2,14 @@
 #define LOGGING_H
 
 #include <string>
+#include <sstream>
 #include <memory>
 
 namespace lez
 {
     namespace logging
     {
-        enum class Level
-        {
+        enum class Level {
             trace = 0,
             debug,
 
@@ -20,19 +20,28 @@ namespace lez
             fatal
         };
 
+        class Level_converter
+        {
+        public:
+            static std::string to_str(const Level level);
+            static Level to_level(const std::string& str);
+        };
+
         // ---------------------------------------------------------------
 
         class Logger
         {
         public:
-            virtual void trace(const std::string& message) = 0;
-            virtual void debug(const std::string& message) = 0;
+            virtual void to(const std::string& message, Level level) const;
 
-            virtual void info(const std::string& message) = 0;
-            virtual void warning(const std::string& message) = 0;
+            virtual void trace(const std::string& message) const = 0;
+            virtual void debug(const std::string& message) const = 0;
 
-            virtual void error(const std::string& message) = 0;
-            virtual void fatal(const std::string& message) = 0;
+            virtual void info(const std::string& message) const = 0;
+            virtual void warning(const std::string& message) const = 0;
+
+            virtual void error(const std::string& message) const = 0;
+            virtual void fatal(const std::string& message) const = 0;
 
         public:
             virtual ~Logger() = default;
@@ -46,6 +55,9 @@ namespace lez
 
         // global mt unsafe!?
         // ---------------------------------------------------------------
+
+        void to(const std::string& message, Level level);
+        void to(const std::ostringstream& sout, Level level);
 
         void trace(const std::string& message);
         void debug(const std::string& message);

@@ -72,32 +72,32 @@ namespace lez
 
             // -----------------------------------------------------------
 
-            void Boost_logger::trace(const std::string& message)
+            void Boost_logger::trace(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(trace) << message;
             }
 
-            void Boost_logger::debug(const std::string& message)
+            void Boost_logger::debug(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(debug) << message;
             }
 
-            void Boost_logger::info(const std::string& message)
+            void Boost_logger::info(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(info) << message;
             }
 
-            void Boost_logger::warning(const std::string& message)
+            void Boost_logger::warning(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(warning) << message;
             }
 
-            void Boost_logger::error(const std::string& message)
+            void Boost_logger::error(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(error) << message;
             }
 
-            void Boost_logger::fatal(const std::string& message)
+            void Boost_logger::fatal(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(fatal) << message;
             }

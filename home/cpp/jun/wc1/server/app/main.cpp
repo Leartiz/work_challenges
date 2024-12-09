@@ -1,4 +1,5 @@
 #include <memory>
+#include <string>
 #include <exception>
 
 #include <boost/asio.hpp>
@@ -15,15 +16,16 @@ using namespace lez;
 
 // -----------------------------------------------------------------------
 
-void initialize_logging()
+void initialize_logging(const Config& config)
 {
     using logging::impl::Boost_logger;
 
-    Boost_logger::Params default_params;
-    auto logger =
-            std::make_shared<Boost_logger>(
-                default_params);
+    Boost_logger::Params params;
+    params.level = logging::Level_converter::to_level(config.log_level);
 
+    //...
+
+    auto logger = std::make_shared<Boost_logger>(params);
     logging::set_logger(logger);
 }
 
@@ -42,7 +44,7 @@ int main() /* or wrap in a class: App */
 
         /* logger */
 
-        initialize_logging();
+        initialize_logging(c);
 
         logging::trace("trace");
         logging::debug("debug");
@@ -51,7 +53,8 @@ int main() /* or wrap in a class: App */
         logging::error("error");
         logging::fatal("fatal");
 
-        logging::info(c.to_string());
+        c.log(logging::get_logger(),
+              logging::Level::debug);
 
         /* deps */
         Lua_math math_service;
@@ -59,7 +62,7 @@ int main() /* or wrap in a class: App */
 		// ***
 
 		boost::asio::io_context ioc;
-        Listener listener(ioc, math_service, 24444);
+        Listener listener(ioc, math_service, c.port);
 
 		ioc.run();
 	}

@@ -34,14 +34,14 @@ namespace lez
                 explicit Boost_logger(const Params&);
 
             public:
-                void trace(const std::string& message) override;
-                void debug(const std::string& message) override;
+                void trace(const std::string& message) const override;
+                void debug(const std::string& message) const override;
 
-                void info(const std::string& message) override;
-                void warning(const std::string& message) override;
+                void info(const std::string& message) const override;
+                void warning(const std::string& message) const override;
 
-                void error(const std::string& message) override;
-                void fatal(const std::string& message) override;
+                void error(const std::string& message) const override;
+                void fatal(const std::string& message) const override;
 
             public:
                 ~Boost_logger() override;
