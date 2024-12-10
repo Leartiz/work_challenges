@@ -34,9 +34,9 @@ OTHER_FILES += \
 message("Pwd: $$PWD")
 message("Assembly Catalog: $$OUT_PWD")
 
-ENV_FILE = $$PWD/../.env
-
+QMAKE_PRE_LINK += $$quote(echo qmake_pre_link)
 win32: {
-    message("Copying a file: $$ENV_FILE to folder: $$OUT_PWD")
-    QMAKE_POST_LINK = copy /Y "$$ENV_FILE" "$$OUT_PWD"
+    message("Copying a file: .env to folder: $$OUT_PWD")
+    QMAKE_PRE_LINK += echo Starting file copy...
+    QMAKE_PRE_LINK += robocopy $$quote($$PWD/..) $$quote($$OUT_PWD) .env
 }
