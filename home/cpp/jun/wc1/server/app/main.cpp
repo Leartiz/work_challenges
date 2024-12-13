@@ -12,6 +12,9 @@
 #include "service/impl/lua_math.h"
 #include "adapters/interfaces/tcp/listener.h"
 
+#include "adapters/infrastructure/storage/log/log_storage.h"
+#include "adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h"
+
 using namespace lez;
 
 // -----------------------------------------------------------------------
@@ -33,8 +36,11 @@ void initialize_logging(const Config& config)
 
 int main() /* or wrap in a class: App */ 
 {
-    using lez::adapters::interfaces::tcp::Listener;
-    using lez::service::impl::Lua_math;
+    using adapters::interfaces::tcp::Listener;
+    using service::impl::Lua_math;
+
+    using adapters::infrastructure::Log_storage;
+    using adapters::infrastructure::impl::Clickhouse_storage;
 
 	try {
 
@@ -56,8 +62,11 @@ int main() /* or wrap in a class: App */
         c.log(logging::get_logger(),
               logging::Level::debug);
 
-        /* deps */
+        /* services */
         Lua_math math_service;
+
+        /* infrastructure */
+        Log_storage *log_storage = new Clickhouse_storage();
 
 		// ***
 

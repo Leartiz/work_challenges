@@ -15,6 +15,7 @@ SOURCES += \
         $$PWD/../app/adapters/interfaces/tcp/client_connection.cpp \
         $$PWD/../app/adapters/interfaces/tcp/listener.cpp \
         $$PWD/../app/service/impl/lua_math.cpp \
+        adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.cpp \
         main.cpp
 
 HEADERS += \
@@ -24,7 +25,9 @@ HEADERS += \
     $$PWD/../app/service/impl/lua_math.h \
     $$PWD/../app/service/service.h \
     $$PWD/../logging/impl/boost/boost_logger.h \
-    $$PWD/../logging/logging.h
+    $$PWD/../logging/logging.h \
+    adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h \
+    adapters/infrastructure/storage/log/log_storage.h
 
 OTHER_FILES += \
     $$PWD/../.env
@@ -37,6 +40,9 @@ message("Assembly Catalog: $$OUT_PWD")
 QMAKE_PRE_LINK += $$quote(echo qmake_pre_link)
 win32: {
     message("Copying a file: .env to folder: $$OUT_PWD")
+
     QMAKE_PRE_LINK += echo Starting file copy...
     QMAKE_PRE_LINK += robocopy $$quote($$PWD/..) $$quote($$OUT_PWD) .env
 }
+
+# ------------------------------------------------------------------------

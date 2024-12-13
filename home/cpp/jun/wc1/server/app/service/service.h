@@ -11,9 +11,6 @@ namespace lez
 			class Math
 			{
 			public:
-                /*
-
-                */
 				virtual double calculate_expression(const std::string&) = 0;
 				virtual ~Math() {};
 			};
