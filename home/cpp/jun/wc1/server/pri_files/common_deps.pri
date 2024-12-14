@@ -4,7 +4,8 @@ INCLUDEPATH += \
     $$PWD/../dependency/abseil \
     $$PWD/../dependency/zstd/lib \
     $$PWD/../dependency/lz4/lib \
-    $$PWD/../dependency/cityhash/src
+    $$PWD/../dependency/cityhash/src \
+    $$PWD/../dependency/strutil
 
 SOURCES += \
     $$PWD/../dependency/cityhash/src/city.cc

@@ -1,6 +1,8 @@
 #include <mutex>
 #include <stdexcept>
 
+#include <strutil/strutil.h>
+
 #include "logging.h"
 
 namespace lez
@@ -23,14 +25,15 @@ namespace lez
 
         Level Level_converter::to_level(const std::string& str)
         {
-            if (to_str(Level::trace) == str) return Level::trace;
-            if (to_str(Level::debug) == str) return Level::debug;
+            const auto lower_str = strutil::to_lower(str);
+            if (to_str(Level::trace) == lower_str) return Level::trace;
+            if (to_str(Level::debug) == lower_str) return Level::debug;
 
-            if (to_str(Level::info) == str) return Level::info;
-            if (to_str(Level::warning) == str) return Level::warning;
+            if (to_str(Level::info) == lower_str) return Level::info;
+            if (to_str(Level::warning) == lower_str) return Level::warning;
 
-            if (to_str(Level::error) == str) return Level::error;
-            if (to_str(Level::fatal) == str) return Level::fatal;
+            if (to_str(Level::error) == lower_str) return Level::error;
+            if (to_str(Level::fatal) == lower_str) return Level::fatal;
 
             return Level::trace; // !
         }
