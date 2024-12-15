@@ -47,7 +47,8 @@ namespace lez
                 validate_expression(expression);
 
                 const std::string lua_code = "result = " + expression;
-                if (luaL_dostring(m_lua_state, lua_code.c_str()) != LUA_OK) {
+                const auto status_value = luaL_dostring(m_lua_state, lua_code.c_str());
+                if (status_value != LUA_OK) {
                     std::ostringstream sout;
                     sout << "lua code execution failed with error: " <<
                         lua_tostring(m_lua_state, -1);

@@ -23,8 +23,16 @@ private slots:
     void test_Lua_math_calculate_expression_data();
     void test_Lua_math_calculate_expression();
 
-public slots:
+private slots:
+    void test_Payload_with_expr_to_json_n0();
+    void test_Payload_with_expr_from_json_n0();
+
+private slots:
+    void test_Request_to_json_n0();
+
+private slots:
     void test_std_any_to_string();
+    void test_std_format();
 
     // some dependencies!
 

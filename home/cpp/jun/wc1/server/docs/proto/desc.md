@@ -2,15 +2,27 @@
 
 ## Packet
 
-### Header
+### Header (TCP)
 
 - Длина тела. 4 байта, uint32, big endian.
 
-### Body
+### Body (with internal header?). Request, response
 
 - Строка в формате JSON.
 
+#### Examples
+
+```hex
+00 00 00 4A // заголовок (дальше без разделителя)
+7B 0A 20 20 20 20 22 73 65 72 76 ... // тело
+```
+
 <!-- -------------------------------------------- -->
+
+## Service
+
+The payload is determined by a combination: 
+    service and action.
 
 ## Math (calculate expression)
 
@@ -29,7 +41,7 @@
 }
 ```
 
-#### Example
+#### Examples
 
 ```json
 {
@@ -65,7 +77,7 @@
 }
 ```
 
-#### Example
+#### Examples
 
 ##### OK ✅
 

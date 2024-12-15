@@ -4,19 +4,15 @@ CONFIG += console c++20
 CONFIG -= app_bundle
 CONFIG -= qt
 
+# ------------------------------------------------------------------------
+
 include(../pri_files/common_deps.pri)
+include(../pri_files/app_sources.pri)
 
 # ------------------------------------------------------------------------
 
 SOURCES += \
-        $$PWD/../app/config/config.cpp \
-        $$PWD/../app/logging/impl/boost/boost_logger.cpp \
-        $$PWD/../app/logging/logging.cpp \
-        $$PWD/../app/adapters/interfaces/tcp/client_connection.cpp \
-        $$PWD/../app/adapters/interfaces/tcp/listener.cpp \
-        $$PWD/../app/service/impl/lua_math.cpp \
-        $$PWD/../app/adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.cpp \
-        main.cpp
+    main.cpp
 
 HEADERS += \
     $$PWD/../config/config.h \
@@ -27,7 +23,10 @@ HEADERS += \
     $$PWD/../app/logging/impl/boost/boost_logger.h \
     $$PWD/../app/logging/logging.h \
     $$PWD/../app/adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h \
-    $$PWD/../app/adapters/infrastructure/storage/log/log_storage.h
+    $$PWD/../app/adapters/infrastructure/storage/log/log_storage.h \
+    $$PWD/../app/adapters/interfaces/tcp/dto/math/payload_with_expr.h \
+    $$PWD/../app/adapters/interfaces/tcp/dto/payload.h \
+    $$PWD/../app/adapters/interfaces/tcp/dto/request.h
 
 OTHER_FILES += \
     $$PWD/../.env

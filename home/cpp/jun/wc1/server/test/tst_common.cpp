@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <memory>
+#include <format>
 
 #include <QDebug>
 
@@ -12,6 +13,9 @@
 
 #include "service/math_service.h"
 #include "service/impl/lua_math.h"
+
+#include "adapters/interfaces/tcp/dto/math/payload_with_expr.h"
+#include "adapters/interfaces/tcp/dto/request.h"
 
 #include "nlohmann/json.hpp"
 
@@ -52,7 +56,9 @@ void Common::test_Lua_math_calculate_expression_err_n0()
 
     std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
-                             m->calculate_expression("5 5 5 5"));
+                             (m->calculate_expression("5 5 5 5")));
+
+    //QVERIFY_THROWS_NO_EXCEPTION((m->calculate_expression("5 5 5 5")));
 }
 
 void Common::test_Lua_math_calculate_expression_err_n1()
@@ -62,7 +68,7 @@ void Common::test_Lua_math_calculate_expression_err_n1()
 
     std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
-                             m->calculate_expression("5+5; while true do end"));
+                             (m->calculate_expression("5+5; while true do end")));
 }
 
 // -----------------------------------------------------------------------
@@ -99,6 +105,50 @@ void Common::test_Lua_math_calculate_expression()
     QCOMPARE(m->calculate_expression(expression), result);
 }
 
+// -----------------------------------------------------------------------
+
+void Common::test_Payload_with_expr_to_json_n0()
+{
+    using nlohmann::json;
+    using namespace lez::adapters::interfaces::tcp::dto;
+
+    math::Payload_with_expr pd;
+    pd.set_expr("1 + 2 + 3 + 4 + 5");
+    const auto j = pd.to_json();
+
+    std::ostringstream sout; sout << j;
+    qDebug() << sout.str();
+}
+
+void Common::test_Payload_with_expr_from_json_n0()
+{
+    using nlohmann::json;
+    using namespace lez::adapters::interfaces::tcp::dto;
+
+    const std::string expr = "1 + 2 + 3 + 4 + 5";
+
+    math::Payload_with_expr pd;
+    const json j = {
+        { "payload", {
+              { "expression", expr.c_str() }
+          } }
+    };
+    pd.from_json(j);
+
+    QCOMPARE_EQ(pd.get_expr(), expr);
+}
+
+// -----------------------------------------------------------------------
+
+void Common::test_Request_to_json_n0()
+{
+    using namespace lez::adapters::interfaces::tcp::dto;
+    Request r;
+    const auto j = r.to_json();
+    std::ostringstream sout; sout << j;
+    qDebug() << sout.str();
+}
+
 // std library
 // -----------------------------------------------------------------------
 
@@ -108,6 +158,12 @@ void Common::test_std_any_to_string()
     std::ostringstream sout;
     sout << std::any_cast<std::string>(a);
     qDebug() << sout.str();
+}
+
+void Common::test_std_format()
+{
+    qDebug() << std::format("missing `{}` in JSON",
+                            std::string("test_key")).c_str();
 }
 
 // experiments with some dependencies
