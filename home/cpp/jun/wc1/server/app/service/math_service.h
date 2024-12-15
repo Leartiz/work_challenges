@@ -8,11 +8,11 @@ namespace lez
 	{
 		namespace contract
 		{
-			class Math
+            class Math_service
 			{
 			public:
 				virtual double calculate_expression(const std::string&) = 0;
-				virtual ~Math() {};
+                virtual ~Math_service() {};
 			};
 		}
 	}

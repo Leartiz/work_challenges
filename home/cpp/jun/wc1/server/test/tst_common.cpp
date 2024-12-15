@@ -10,7 +10,7 @@
 
 #include "tst_common.h"
 
-#include "service/service.h"
+#include "service/math_service.h"
 #include "service/impl/lua_math.h"
 
 #include "nlohmann/json.hpp"
@@ -30,7 +30,7 @@ void Common::test_Lua_math_calculate_expression_n0()
     using namespace lez::service::contract;
     using namespace lez::service::impl;
 
-    std::shared_ptr<Math> m = std::make_shared<Lua_math>();
+    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QCOMPARE(m->calculate_expression("5+5"), 10);
 }
 
@@ -39,7 +39,7 @@ void Common::test_Lua_math_calculate_expression_n1()
     using namespace lez::service::contract;
     using namespace lez::service::impl;
 
-    std::shared_ptr<Math> m = std::make_shared<Lua_math>();
+    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QCOMPARE(m->calculate_expression("5*5*3"), 75);
 }
 
@@ -50,7 +50,7 @@ void Common::test_Lua_math_calculate_expression_err_n0()
     using namespace lez::service::contract;
     using namespace lez::service::impl;
 
-    std::shared_ptr<Math> m = std::make_shared<Lua_math>();
+    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
                              m->calculate_expression("5 5 5 5"));
 }
@@ -60,7 +60,7 @@ void Common::test_Lua_math_calculate_expression_err_n1()
     using namespace lez::service::contract;
     using namespace lez::service::impl;
 
-    std::shared_ptr<Math> m = std::make_shared<Lua_math>();
+    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
                              m->calculate_expression("5+5; while true do end"));
 }
@@ -95,7 +95,7 @@ void Common::test_Lua_math_calculate_expression()
     using namespace lez::service::contract;
     using namespace lez::service::impl;
 
-    std::shared_ptr<Math> m = std::make_shared<Lua_math>();
+    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
     QCOMPARE(m->calculate_expression(expression), result);
 }
 

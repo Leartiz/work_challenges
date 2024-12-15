@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-CONFIG += console c++17
+CONFIG += console c++20
 CONFIG -= app_bundle
 CONFIG -= qt
 
@@ -15,7 +15,7 @@ SOURCES += \
         $$PWD/../app/adapters/interfaces/tcp/client_connection.cpp \
         $$PWD/../app/adapters/interfaces/tcp/listener.cpp \
         $$PWD/../app/service/impl/lua_math.cpp \
-        adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.cpp \
+        $$PWD/../app/adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.cpp \
         main.cpp
 
 HEADERS += \
@@ -23,11 +23,11 @@ HEADERS += \
     $$PWD/../app/adapters/interfaces/tcp/client_connection.h \
     $$PWD/../app/adapters/interfaces/tcp/listener.h \
     $$PWD/../app/service/impl/lua_math.h \
-    $$PWD/../app/service/service.h \
-    $$PWD/../logging/impl/boost/boost_logger.h \
-    $$PWD/../logging/logging.h \
-    adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h \
-    adapters/infrastructure/storage/log/log_storage.h
+    $$PWD/../app/service/math_service.h \
+    $$PWD/../app/logging/impl/boost/boost_logger.h \
+    $$PWD/../app/logging/logging.h \
+    $$PWD/../app/adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h \
+    $$PWD/../app/adapters/infrastructure/storage/log/log_storage.h
 
 OTHER_FILES += \
     $$PWD/../.env

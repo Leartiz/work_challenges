@@ -2,7 +2,7 @@
 
 #include <lua.hpp>
 
-#include "service/service.h"
+#include "service/math_service.h"
 
 namespace lez
 {
@@ -10,7 +10,7 @@ namespace lez
 	{
 		namespace impl
 		{
-            class Lua_math : public contract::Math
+            class Lua_math : public contract::Math_service
 			{
 			public:
                 Lua_math();

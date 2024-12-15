@@ -6,7 +6,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/deadline_timer.hpp>
 
-#include "service/service.h"
+#include "service/math_service.h"
 
 namespace lez
 {
@@ -26,7 +26,7 @@ namespace lez
 					using deadline_timer = boost::asio::deadline_timer;
 					using error_code = boost::system::error_code;
 
-					using math_service = service::contract::Math;
+                    using math_service = service::contract::Math_service;
 
 				public:
 					using ptr = std::shared_ptr<Client_connection>;
@@ -56,7 +56,7 @@ namespace lez
 
 					// services!
 				private:
-					service::contract::Math& m_math_service;
+                    service::contract::Math_service& m_math_service;
 					//...
 				};
 			}
