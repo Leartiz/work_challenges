@@ -29,6 +29,9 @@ private slots:
 
 private slots:
     void test_Request_to_json_n0();
+    void test_Request_to_json_n1();
+
+    void test_Request_from_json_n0();
 
 private slots:
     void test_std_any_to_string();

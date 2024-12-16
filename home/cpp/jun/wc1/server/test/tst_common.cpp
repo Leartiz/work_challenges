@@ -143,9 +143,54 @@ void Common::test_Payload_with_expr_from_json_n0()
 void Common::test_Request_to_json_n0()
 {
     using namespace lez::adapters::interfaces::tcp::dto;
+
     Request r;
     const auto j = r.to_json();
     std::ostringstream sout; sout << j;
+    qDebug() << sout.str();
+}
+
+void Common::test_Request_to_json_n1()
+{
+    using nlohmann::json;
+    using namespace lez::adapters::interfaces::tcp::dto;
+
+    Request r;
+    r.set_service_name("math");
+    r.set_action_name("calculate");
+
+    math::Payload_with_expr pd;
+    json j = { { "payload", { { "expression", "1 + 2 + 3 + 4 + 5" } } } };
+    pd.from_json(j);
+    r.set_payload(std::make_shared<math::Payload_with_expr>(pd));
+
+    // ***
+
+    j = r.to_json();
+    std::ostringstream sout; sout << j;
+    qDebug() << sout.str();
+}
+
+void Common::test_Request_from_json_n0()
+{
+    using namespace lez::adapters::interfaces::tcp::dto;
+
+    const std::string json_str = R"({
+            "request_id": 12345,
+            "service": "math",
+            "action": "calculate",
+            "payload": {
+                "expression": "1 + 2 + 3 + 4 + 5"
+            }
+        }
+    )";
+    const auto input_j = nlohmann::json::parse(json_str);
+    const auto r = Request::from_json(input_j);
+
+    // ***
+
+    const auto output_j = r->to_json();
+    std::ostringstream sout; sout << output_j;
     qDebug() << sout.str();
 }
 
@@ -162,8 +207,12 @@ void Common::test_std_any_to_string()
 
 void Common::test_std_format()
 {
-    qDebug() << std::format("missing `{}` in JSON",
-                            std::string("test_key")).c_str();
+    qDebug() << std::format("str: `{}`", std::string("test_key")).c_str();
+    qDebug() << std::format("int: `{}`", 123).c_str();
+
+    qDebug() << std::format("double: `{}`", 123.123).c_str();
+    qDebug() << std::format("nullptr: `{}`", nullptr).c_str();
+    //...
 }
 
 // experiments with some dependencies

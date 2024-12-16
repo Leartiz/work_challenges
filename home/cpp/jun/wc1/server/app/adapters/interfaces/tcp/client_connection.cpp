@@ -1,10 +1,12 @@
 #include <utility>
 #include <iostream>
+#include <sstream>
 
 #include <boost/bind.hpp>
 
 #include "client_connection.h"
 #include "logging/logging.h"
+#include "dto/request.h"
 
 namespace lez
 {
@@ -43,14 +45,14 @@ namespace lez
 				void Client_connection::async_read()
 				{
 					using namespace boost::asio::placeholders;
-					m_rw_message = std::string(1024, 0);
+                    m_read_message = std::string(1024+4, 0);
 
 					m_deadline_timer.expires_from_now(boost::posix_time::seconds(3));
 					m_deadline_timer.async_wait(
 						boost::bind(&Client_connection::deadline_handler,
 							shared_from_this(), error));
 
-					m_tcp_socket.async_read_some(boost::asio::buffer(m_rw_message),
+                    m_tcp_socket.async_read_some(boost::asio::buffer(m_read_message),
 						boost::bind(&Client_connection::read_handler,
 							shared_from_this(), error, bytes_transferred));
 				}
@@ -58,9 +60,7 @@ namespace lez
 				void Client_connection::async_write(std::string w_message)
 				{
 					using namespace boost::asio::placeholders;
-
-					m_rw_message = std::move(w_message);
-					m_tcp_socket.async_write_some(boost::asio::buffer(m_rw_message),
+                    m_tcp_socket.async_write_some(boost::asio::buffer(w_message),
 						boost::bind(&Client_connection::write_handler,
 							shared_from_this(), error, bytes_transferred));
 				}
@@ -77,11 +77,27 @@ namespace lez
 						return;
 					}
 
+                    // header (TCP)
 
-                    logging::info("read: " + m_rw_message);
+                    if (bytes_transferred == 4) {
+                        if (m_read_message.size() != 4) {
+                            return;
+                        }
 
-					// router
+                        std::string first_four = m_read_message.substr(0, 4);
+                        std::uint64_t value = std::stoull(first_four);
 
+                        if (value < bytes_transferred - 4) {
+                            return;
+                        }
+                    }
+
+                    const auto body = m_read_message.substr(4);
+                    const auto j = nlohmann::json::parse(body);
+                    const auto r = dto::Request::from_json(j);
+
+                    std::ostringstream sout; sout << r->to_json().dump();
+                    logging::info("read: " + sout.str());
 
 					async_write("ok");
 				}

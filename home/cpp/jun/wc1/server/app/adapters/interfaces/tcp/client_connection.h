@@ -52,7 +52,7 @@ namespace lez
 					deadline_timer m_deadline_timer;
 
 				private:
-					std::string m_rw_message;
+                    std::string m_read_message;
 
 					// services!
 				private:

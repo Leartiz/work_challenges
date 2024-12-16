@@ -26,13 +26,16 @@ namespace lez::adapters::interfaces::tcp::dto
 
     public:
         Request();
+        void set_payload(std::shared_ptr<Payload>);
+        void set_service_name(const std::string&);
+        void set_action_name(const std::string&);
 
     private:
         std::uint64_t m_id;
         std::string m_service_name;
         std::string m_action_name;
 
-    public:
+    private:
         std::shared_ptr<Payload> m_payload;
     };
 }

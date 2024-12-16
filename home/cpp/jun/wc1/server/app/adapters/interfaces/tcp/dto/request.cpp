@@ -13,6 +13,13 @@ namespace
         }
         throw std::runtime_error(err_message);
     }
+
+    void validate_str(const std::string& str, const std::string& err_message)
+    {
+        if (str.empty()) {
+            throw std::runtime_error(err_message);
+        }
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -27,7 +34,26 @@ namespace lez::adapters::interfaces::tcp::dto
         , m_payload{ nullptr }
     {}
 
-    // -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+
+    void Request::set_payload(std::shared_ptr<Payload> pd)
+    {
+        m_payload = pd;
+    }
+
+    void Request::set_service_name(const std::string& str)
+    {
+        validate_str(str, "service name cannot be empty");
+        m_service_name = str;
+    }
+
+    void Request::set_action_name(const std::string& str)
+    {
+        validate_str(str, "action name cannot be empty");
+        m_action_name = str;
+    }
+
+// -----------------------------------------------------------------------
 
     std::shared_ptr<Request> Request::from_json(const nlohmann::json& j)
     {
@@ -43,9 +69,13 @@ namespace lez::adapters::interfaces::tcp::dto
 
         const auto service_name = parse_str_from_json(j, SERVICE_JSON_KEY,
                     std::format("missing `{}` in JSON", SERVICE_JSON_KEY));
+        validate_str(service_name,
+                     std::format("`{}` is empty string", SERVICE_JSON_KEY));
 
         const auto action_name = parse_str_from_json(j, ACTION_JSON_KEY,
                     std::format("missing `{}` in JSON", ACTION_JSON_KEY));
+        validate_str(action_name,
+                     std::format("`{}` is empty string", ACTION_JSON_KEY));
 
         request.m_service_name = service_name;
         request.m_action_name = action_name;
@@ -66,18 +96,18 @@ namespace lez::adapters::interfaces::tcp::dto
     }
 
     /*
-    ```json
-    {
-        "request_id": "<uint64>",
+        ```json
+        {
+            "request_id": "<uint64>",
 
-        "service": "math",
-        "action": "calculate",
+            "service": "math",
+            "action": "calculate",
 
-        "payload": {
-            "expression": "<string>"
+            "payload": {
+                "expression": "<string>"
+            }
         }
-    }
-    ```
+        ```
     */
     const nlohmann::json Request::to_json() const
     {
@@ -87,7 +117,10 @@ namespace lez::adapters::interfaces::tcp::dto
         j[ACTION_JSON_KEY] = m_action_name;
 
         if (m_payload) {
-            j.push_back(m_payload->to_json()); // ?
+           auto j_payload = m_payload->to_json(); // ?
+           for (auto& element : j_payload.items()) {
+               j[element.key()] = element.value();
+           }
         }
         else {
             j[Payload::PAYLOAD_JSON_KEY] = nullptr;
