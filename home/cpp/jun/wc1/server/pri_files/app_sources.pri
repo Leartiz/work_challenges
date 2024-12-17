@@ -1,4 +1,5 @@
 SOURCES += \
+    $$PWD/../app/adapters/interfaces/tcp/dto/common_validator.cpp \
     $$PWD/../app/config/config.cpp \
     $$PWD/../app/logging/impl/boost/boost_logger.cpp \
     $$PWD/../app/logging/logging.cpp \

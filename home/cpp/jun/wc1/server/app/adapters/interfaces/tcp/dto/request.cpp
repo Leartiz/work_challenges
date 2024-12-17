@@ -1,6 +1,7 @@
 #include <format>
 
 #include "request.h"
+#include "common_validator.h"
 #include "math/payload_with_expr.h"
 
 namespace
@@ -12,13 +13,6 @@ namespace
             return j[key].get<std::string>();
         }
         throw std::runtime_error(err_message);
-    }
-
-    void validate_str(const std::string& str, const std::string& err_message)
-    {
-        if (str.empty()) {
-            throw std::runtime_error(err_message);
-        }
     }
 }
 
@@ -43,13 +37,13 @@ namespace lez::adapters::interfaces::tcp::dto
 
     void Request::set_service_name(const std::string& str)
     {
-        validate_str(str, "service name cannot be empty");
+        Common_validator::string_not_empty(str, "service name cannot be empty");
         m_service_name = str;
     }
 
     void Request::set_action_name(const std::string& str)
     {
-        validate_str(str, "action name cannot be empty");
+        Common_validator::string_not_empty(str, "action name cannot be empty");
         m_action_name = str;
     }
 
@@ -69,13 +63,13 @@ namespace lez::adapters::interfaces::tcp::dto
 
         const auto service_name = parse_str_from_json(j, SERVICE_JSON_KEY,
                     std::format("missing `{}` in JSON", SERVICE_JSON_KEY));
-        validate_str(service_name,
-                     std::format("`{}` is empty string", SERVICE_JSON_KEY));
+        Common_validator::string_not_empty(service_name,
+                    std::format("`{}` is empty string", SERVICE_JSON_KEY));
 
         const auto action_name = parse_str_from_json(j, ACTION_JSON_KEY,
                     std::format("missing `{}` in JSON", ACTION_JSON_KEY));
-        validate_str(action_name,
-                     std::format("`{}` is empty string", ACTION_JSON_KEY));
+        Common_validator::string_not_empty(action_name,
+                    std::format("`{}` is empty string", ACTION_JSON_KEY));
 
         request.m_service_name = service_name;
         request.m_action_name = action_name;
@@ -84,7 +78,7 @@ namespace lez::adapters::interfaces::tcp::dto
 
         if (service_name == "math" && action_name == "calculate") { // !
             const auto payload = std::make_shared<math::Payload_with_expr>();
-            payload->from_json(j);
+            payload->from_json(j); // void!
             request.m_payload = payload;
         }
         //...

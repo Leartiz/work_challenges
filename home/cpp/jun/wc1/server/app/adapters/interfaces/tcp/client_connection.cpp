@@ -1,5 +1,3 @@
-#include <utility>
-#include <iostream>
 #include <sstream>
 
 #include <boost/bind.hpp>
@@ -36,13 +34,13 @@ namespace lez
 
 				void Client_connection::start()
 				{
-					async_read();
+                    async_read_next_request();
 				}
 
 				// rw
 				// -------------------------------------------------------------------
 
-				void Client_connection::async_read()
+                void Client_connection::async_read_next_request()
 				{
 					using namespace boost::asio::placeholders;
                     m_read_message = std::string(1024+4, 0);
@@ -57,10 +55,16 @@ namespace lez
 							shared_from_this(), error, bytes_transferred));
 				}
 
+                void Client_connection::async_read_part_request()
+                {
+                    // TODO: !!!
+                }
+
 				void Client_connection::async_write(std::string w_message)
 				{
 					using namespace boost::asio::placeholders;
-                    m_tcp_socket.async_write_some(boost::asio::buffer(w_message),
+                    m_write_message = w_message;
+                    m_tcp_socket.async_write_some(boost::asio::buffer(m_write_message),
 						boost::bind(&Client_connection::write_handler,
 							shared_from_this(), error, bytes_transferred));
 				}
@@ -92,6 +96,8 @@ namespace lez
                         }
                     }
 
+                    // body
+
                     const auto body = m_read_message.substr(4);
                     const auto j = nlohmann::json::parse(body);
                     const auto r = dto::Request::from_json(j);
@@ -99,7 +105,7 @@ namespace lez
                     std::ostringstream sout; sout << r->to_json().dump();
                     logging::info("read: " + sout.str());
 
-					async_write("ok");
+                    async_write("ok");
 				}
 
 				void Client_connection::write_handler(const error_code& err,

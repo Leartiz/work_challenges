@@ -39,7 +39,9 @@ namespace lez
 				private:
 					Client_connection(io_context&, math_service&);
 					void async_write(std::string);
-					void async_read();
+
+                    void async_read_next_request();
+                    void async_read_part_request();
 
 				private:
 					void read_handler(const error_code&, size_t);
@@ -53,6 +55,7 @@ namespace lez
 
 				private:
                     std::string m_read_message;
+                    std::string m_write_message;
 
 					// services!
 				private:

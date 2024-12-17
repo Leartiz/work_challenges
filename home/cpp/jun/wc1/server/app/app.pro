@@ -26,7 +26,8 @@ HEADERS += \
     $$PWD/../app/adapters/infrastructure/storage/log/log_storage.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/math/payload_with_expr.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/payload.h \
-    $$PWD/../app/adapters/interfaces/tcp/dto/request.h
+    $$PWD/../app/adapters/interfaces/tcp/dto/request.h \
+    $$PWD/../app/adapters/interfaces/tcp/dto/common_validator.h
 
 OTHER_FILES += \
     $$PWD/../.env

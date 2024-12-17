@@ -32,7 +32,28 @@ void initialize_logging(const Config& config)
     logging::set_logger(logger);
 }
 
+void test_logging()
+{
+    logging::trace("trace");
+    logging::debug("debug");
+
+    logging::info("info");
+    logging::warning("warning");
+
+    logging::error("error");
+    logging::fatal("fatal");
+}
+
 // -----------------------------------------------------------------------
+
+void run_io_context(boost::asio::io_context& ioc) {
+    try {
+        ioc.run();
+    } catch (const std::exception& e) {
+
+    }
+}
+
 
 int main() /* or wrap in a class: App */ 
 {
@@ -51,29 +72,41 @@ int main() /* or wrap in a class: App */
         /* logger */
 
         initialize_logging(c);
-
-        logging::trace("trace");
-        logging::debug("debug");
-        logging::info("info");
-        logging::warning("warning");
-        logging::error("error");
-        logging::fatal("fatal");
+        test_logging();
 
         c.log(logging::get_logger(),
               logging::Level::debug);
 
+        // framework!?
+        boost::asio::io_context ioc;
+
         /* services */
+
         Lua_math math_service;
 
         /* infrastructure */
+
         Log_storage *log_storage = new Clickhouse_storage();
 
-		// ***
+        /* interfaces */
 
-		boost::asio::io_context ioc;
         Listener listener(ioc, math_service, c.port);
 
-		ioc.run();
+        // ***
+
+        boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work_guard =
+                boost::asio::make_work_guard(ioc);
+        const size_t num_threads = std::thread::hardware_concurrency();
+
+        std::vector<std::thread> threads;
+
+        for (size_t i = 0; i < num_threads; ++i) {
+            threads.emplace_back(run_io_context, std::ref(ioc));
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
 	}
     catch (const std::exception& ex) {
         std::stringstream sout; sout << "err: " << ex.what();
