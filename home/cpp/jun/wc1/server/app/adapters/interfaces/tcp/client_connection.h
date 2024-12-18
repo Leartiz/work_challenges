@@ -16,8 +16,10 @@ namespace lez
 		{
 			namespace tcp
 			{
-				class Client_connection final :
-					public std::enable_shared_from_this<Client_connection>
+                // or `session`!?
+
+                class Client_connection final :
+                    public std::enable_shared_from_this<Client_connection>
 				{
 					// short names!
 				public:
@@ -33,6 +35,9 @@ namespace lez
 					static ptr create(io_context&, math_service&);
 
 				public:
+                    const std::string get_local_addr() const;
+                    const std::string get_remote_addr() const;
+
 					tcp_socket& get_tcp_socket();
 					void start();
 
@@ -54,12 +59,18 @@ namespace lez
 					deadline_timer m_deadline_timer;
 
 				private:
+                    std::uint64_t m_max_read_msg_size = 1024;
+                    std::uint64_t m_max_full_msg_size = 8192;
+
+                private:
+                    std::string m_full_message;
                     std::string m_read_message;
+
                     std::string m_write_message;
 
 					// services!
 				private:
-                    service::contract::Math_service& m_math_service;
+                    math_service& m_math_service;
 					//...
 				};
 			}

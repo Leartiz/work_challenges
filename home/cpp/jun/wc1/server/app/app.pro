@@ -12,6 +12,9 @@ include(../pri_files/app_sources.pri)
 # ------------------------------------------------------------------------
 
 SOURCES += \
+    adapters/interfaces/tcp/dto/auth/auth_payload.cpp \
+    adapters/interfaces/tcp/message_parser.cpp \
+    adapters/interfaces/tcp/request_handler.cpp \
     main.cpp
 
 HEADERS += \
@@ -27,7 +30,10 @@ HEADERS += \
     $$PWD/../app/adapters/interfaces/tcp/dto/math/payload_with_expr.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/payload.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/request.h \
-    $$PWD/../app/adapters/interfaces/tcp/dto/common_validator.h
+    $$PWD/../app/adapters/interfaces/tcp/dto/common_validator.h \
+    adapters/interfaces/tcp/dto/auth/auth_payload.h \
+    adapters/interfaces/tcp/message_parser.h \
+    adapters/interfaces/tcp/request_handler.h
 
 OTHER_FILES += \
     $$PWD/../.env

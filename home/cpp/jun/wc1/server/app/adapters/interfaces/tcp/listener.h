@@ -43,7 +43,7 @@ namespace lez
                     tcp_acceptor m_tcp_acceptor;
 
                 private:
-                    service::contract::Math_service& m_math_service;
+                    math_service& m_math_service;
                 };
             }
         }        

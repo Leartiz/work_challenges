@@ -92,12 +92,12 @@ namespace lez
         // to
         // ---------------------------------------------------------------
 
-        void to(const std::string& message, Level level)
+        void to(const Level level, const std::string& message)
         {
             global_logger->to(message, level);
         }
 
-        void to(const std::ostringstream& sout, Level level)
+        void to(const Level level, const std::ostringstream& sout)
         {
             global_logger->to(sout.str(), level);
         }
@@ -113,7 +113,6 @@ namespace lez
             // cppcheck reports unused variable!?
             static_cast<void>(message);
         }
-
         void debug(const std::string& message)
         {
             global_logger->debug(message);
@@ -123,7 +122,6 @@ namespace lez
         {
             global_logger->info(message);
         }
-
         void warning(const std::string& message)
         {
             global_logger->warning(message);
@@ -133,7 +131,6 @@ namespace lez
         {
             global_logger->error(message);
         }
-
         void fatal(const std::string& message)
         {
             global_logger->fatal(message);

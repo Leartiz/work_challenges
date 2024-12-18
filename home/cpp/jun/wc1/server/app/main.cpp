@@ -42,6 +42,17 @@ void test_logging()
 
     logging::error("error");
     logging::fatal("fatal");
+
+    // ***
+
+    logging::trace_f("trace {}", "f");
+    logging::debug_f("debug {}", "f");
+
+    logging::info_f("info {}", "f");
+    logging::warning_f("warning {}", "f");
+
+    logging::error_f("error {}", "f");
+    logging::fatal_f("fatal {}", "f");
 }
 
 // -----------------------------------------------------------------------

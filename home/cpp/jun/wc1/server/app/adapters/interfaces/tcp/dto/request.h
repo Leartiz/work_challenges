@@ -38,6 +38,8 @@ namespace lez::adapters::interfaces::tcp::dto
     private:
         std::shared_ptr<Payload> m_payload;
     };
+
+    using Sp_request = std::shared_ptr<Request>;
 }
 
 #endif // REQUEST_H

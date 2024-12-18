@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <memory>
+#include <format>
 
 namespace lez
 {
@@ -56,8 +57,8 @@ namespace lez
         // global mt unsafe!?
         // ---------------------------------------------------------------
 
-        void to(const std::string& message, Level level);
-        void to(const std::ostringstream& sout, Level level);
+        void to(const Level level, const std::string& message);
+        void to(const Level level, const std::ostringstream& sout);
 
         void trace(const std::string& message);
         void debug(const std::string& message);
@@ -67,6 +68,51 @@ namespace lez
 
         void error(const std::string& message);
         void fatal(const std::string& message);
+
+        // ---------------------------------------------------------------
+
+        template <class... Args>
+        void to_f(const Level level, const std::string& format,
+                  Args&&... args)
+        {
+            const std::string message = std::vformat(
+                format, std::make_format_args(args...));
+
+            to(level, message);
+        }
+
+        template <class... Args>
+        void trace_f(const std::string& format, Args&&... args)
+        {
+            to_f(Level::trace, format, args...);
+        }
+        template <class... Args>
+        void debug_f(const std::string& format, Args&&... args)
+        {
+            to_f(Level::debug, format, args...);
+        }
+
+        template <class... Args>
+        void info_f(const std::string& format, Args&&... args)
+        {
+            to_f(Level::info, format, args...);
+        }
+        template <class... Args>
+        void warning_f(const std::string& format, Args&&... args)
+        {
+            to_f(Level::warning, format, args...);
+        }
+
+        template <class... Args>
+        void error_f(const std::string& format, Args&&... args)
+        {
+            to_f(Level::error, format, args...);
+        }
+        template <class... Args>
+        void fatal_f(const std::string& format, Args&&... args)
+        {
+            to_f(Level::fatal, format, args...);
+        }
     }
 }
 
