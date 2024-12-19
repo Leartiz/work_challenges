@@ -1,12 +1,6 @@
 [submodule "home/cpp/jun/wc1/server/dependency/clickhouse"]
 	path = home/cpp/jun/wc1/server/dependency/clickhouse
 	url = https://github.com/ClickHouse/clickhouse-cpp.git
-[submodule "home/cpp/jun/wc1/server/dependency/abseil"]
-	path = home/cpp/jun/wc1/server/dependency/abseil
-	url = https://github.com/abseil/abseil-cpp.git
-[submodule "home/cpp/jun/wc1/server/dependency/cityhash"]
-	path = home/cpp/jun/wc1/server/dependency/cityhash
-	url = https://github.com/google/cityhash.git
 [submodule "home/cpp/jun/wc1/server/dependency/strutil"]
 	path = home/cpp/jun/wc1/server/dependency/strutil
 	url = https://github.com/tgalaj/strutil

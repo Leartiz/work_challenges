@@ -31,9 +31,9 @@ HEADERS += \
     $$PWD/../app/adapters/interfaces/tcp/dto/payload.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/request.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/common_validator.h \
-    adapters/interfaces/tcp/dto/auth/auth_payload.h \
-    adapters/interfaces/tcp/message_parser.h \
-    adapters/interfaces/tcp/request_handler.h
+    $$PWD/../app/adapters/adapters/interfaces/tcp/dto/auth/auth_payload.h \
+    $$PWD/../app/adapters/adapters/interfaces/tcp/message_parser.h \
+    $$PWD/../app/adapters/adapters/interfaces/tcp/request_handler.h
 
 OTHER_FILES += \
     $$PWD/../.env

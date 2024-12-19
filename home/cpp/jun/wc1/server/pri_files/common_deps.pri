@@ -1,14 +1,14 @@
+# ------------------------------------------------------------------------
+
 INCLUDEPATH += \
     $$PWD/../dependency \
     $$PWD/../dependency/clickhouse \
-    $$PWD/../dependency/abseil \
-    $$PWD/../dependency/zstd/lib \
-    $$PWD/../dependency/lz4/lib \
-    $$PWD/../dependency/cityhash/src \
+    $$PWD/../dependency/clickhouse/absl \
+    $$PWD/../dependency/clickhouse/cityhash \
+    $$PWD/../dependency/clickhouse/lz4 \
+    $$PWD/../dependency/clickhouse/zstd \
+    $$PWD/../dependency/laserpants \
     $$PWD/../dependency/strutil
-
-SOURCES += \
-    $$PWD/../dependency/cityhash/src/city.cc
 
 # ------------------------------------------------------------------------
 
@@ -16,17 +16,25 @@ win32: {
     LUA_PATH = $$getenv(LUA_PATH)
     BOOST_PATH = $$getenv(BOOST_PATH)
 
-    CLICKHOUSE_PATH = $$PWD/../dependency/clickhouse/build/clickhouse
-    ABSL_PATH =       $$PWD/../dependency/abseil/build/absl
-    ZSTD_PATH =       $$PWD/../dependency/zstd/build/VS2010/bin
-    LZ4_PATH =        $$PWD/../dependency/lz4/build/VS2022/bin
+# ------------------------------------------------------------------------
+
+    CLICKHOUSE_BUILD_PATH = $$PWD/../dependency/clickhouse/build/clickhouse
+    CLICKHOUSE_CONTRIB_PATH = $$CLICKHOUSE_PATH/../contrib
+
+    ABSL_BUILD_PATH =     $$CLICKHOUSE_CONTRIB_PATH/absl/absl
+    CITYHASH_BUILD_PATH = $$CLICKHOUSE_CONTRIB_PATH/cityhash/cityhash
+    LZ4_BUILD_PATH =      $$CLICKHOUSE_CONTRIB_PATH/lz4/lz4
+    ZSTD_BUILD_PATH =     $$CLICKHOUSE_CONTRIB_PATH/zstd/zstd
+
+# ------------------------------------------------------------------------
 
     INCLUDEPATH += \
         $$BOOST_PATH \
         $$LUA_PATH\include
 
     LIBS += -lws2_32 -lmswsock
-    LIBS += -L"$$LUA_PATH" -llua54
+
+    LIBS += -L"$$LUA_PATH/lib" -llua51
     LIBS += -L"$$BOOST_PATH/stage/lib"
 
     CONFIG(debug, debug|release) {
@@ -35,34 +43,34 @@ win32: {
         LIBS += -L"$$CLICKHOUSE_PATH/Debug"
         LIBS += -lclickhouse-cpp-lib
 
-        LIBS += -L"$$ABSL_PATH/numeric/Debug"
+        LIBS += -L"$$ABSL_BUILD_PATH/Debug"
         LIBS += -labsl_int128
 
-        LIBS += -L"$$ABSL_PATH/hash/Debug"
-        LIBS += -labsl_city -labsl_hash -labsl_low_level_hash
+        LIBS += -L"$$CITYHASH_BUILD_PATH/Debug"
+        LIBS += -lcityhash
 
-        LIBS += -L"$$LZ4_PATH/x64_Debug"
-        LIBS += -lliblz4
+        LIBS += -L"$$LZ4_BUILD_PATH/Debug"
+        LIBS += -llz4
 
-        LIBS += -L"$$ZSTD_PATH/x64_Debug"
-        LIBS += -llibzstd
+        LIBS += -L"$$ZSTD_PATH/Debug"
+        LIBS += -lzstdstatic
     } else {
         message("Building in Release mode")
 
         LIBS += -L"$$CLICKHOUSE_PATH/Release"
         LIBS += -lclickhouse-cpp-lib
 
-        LIBS += -L"$$ABSL_PATH/numeric/Release"
+        LIBS += -L"$$ABSL_BUILD_PATH/Release"
         LIBS += -labsl_int128
 
-        LIBS += -L"$$ABSL_PATH/hash/Release"
-        LIBS += -labsl_city -labsl_hash -labsl_low_level_hash
+        LIBS += -L"$$CITYHASH_BUILD_PATH/Release"
+        LIBS += -lcityhash
 
-        LIBS += -L"$$LZ4_PATH/x64_Release"
-        LIBS += -lliblz4
+        LIBS += -L"$$LZ4_BUILD_PATH/Release"
+        LIBS += -llz4
 
-        LIBS += -L"$$ZSTD_PATH/x64_Release"
-        LIBS += -llibzstd
+        LIBS += -L"$$ZSTD_PATH/Release"
+        LIBS += -lzstdstatic
     }
 
 } else: unix: {
