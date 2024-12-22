@@ -1,6 +1,3 @@
-#include <sstream>
-#include <algorithm>
-
 #include <boost/bind.hpp>
 
 #include "client_connection.h"
@@ -15,16 +12,17 @@ namespace lez
 		{
 			namespace tcp
 			{                
-				Client_connection::Client_connection(io_context& ioc, math_service& math_service)
+                Client_connection::Client_connection(io_context& ioc, Request_handler& rh)
 					: m_ioc{ ioc }, m_tcp_socket{ ioc }
 					, m_deadline_timer{ ioc }
-					, m_math_service{ math_service } {};
+                    , m_request_handler{ rh }
+                {}
 
 				Client_connection::ptr
-					Client_connection::create(io_context& ioc, math_service& math_service)
+                    Client_connection::create(io_context& ioc, Request_handler& rh)
 				{
                     return std::shared_ptr<Client_connection>(
-                        new Client_connection(ioc, math_service));
+                        new Client_connection(ioc, rh));
 				}
 
                 // -----------------------------------------------------------------
@@ -60,7 +58,7 @@ namespace lez
                     using namespace boost::posix_time;
 					using namespace boost::asio::placeholders;
 
-                    m_full_message.clear(); // to empty!
+                    m_message_parser.reset(); // to empty!
                     m_read_message = std::string(m_max_read_msg_size, 0);
 
                     m_deadline_timer.expires_from_now(seconds(30000));
@@ -107,61 +105,45 @@ namespace lez
 						return;
 					}
 
-                    logging::trace_f("client `{}` read byte count {}",
-                                     get_remote_addr(), bytes_transferred);
+                    // ***
 
-                    m_full_message += std::move(
-                        m_read_message.substr(0, bytes_transferred));
-
-                    logging::trace_f("client `{}` full message size {}",
-                                     get_remote_addr(), m_full_message.size());
+                    logging::trace_f("client `{}` read byte count {}", get_remote_addr(),
+                                     bytes_transferred);
 
                     // ***
 
-                    if (m_full_message.size() > 4) {
+                    dto::Sp_request request;
+                    try {
+                        m_message_parser.add_to_buffer(m_read_message.substr(0, bytes_transferred));
+                        logging::trace_f("client `{}` has full message size {}", get_remote_addr(),
+                                         m_message_parser.get_buffer_size());
 
-                        auto first_four = m_full_message.substr(0, 4);
-                        std::reverse(first_four.begin(), first_four.end());
-
-                        std::uint32_t value = 0;
-                        std::memcpy(&value, first_four.data(), sizeof(value));
-
-                        if (value < m_full_message.size() - 4) {
-                            async_read_part_request();
-                            return;
-                        }
-
-                        if (value > m_max_full_msg_size) {
-                            logging::warning_f("client `{}` disconnected. With err: {}",
-                                               get_remote_addr(), "full message is too long");
-                            m_tcp_socket.close();
-                            return;
-                        }
+                        request = m_message_parser.parse_request();
+                        m_deadline_timer.cancel(); // !?
                     }
-                    else {
+                    catch(const std::length_error& e) {
                         async_read_part_request();
                         return;
                     }
-
-                    // ***
-
-                    try {
-                        const auto body = m_full_message.substr(4); // to end!
-                        const auto j_body = nlohmann::json::parse(body);
-                        const auto request = dto::Request::from_json(j_body);
-
-                        std::ostringstream sout; sout << request->to_json().dump();
-                        logging::info("read: " + sout.str());
+                    catch(const std::overflow_error& e) {
+                        logging::warning_f("client `{}` disconnected. With err: {}",
+                                           get_remote_addr(), "full message is too long");
+                        m_tcp_socket.close();
+                        return;
                     }
-                    catch (const std::exception& e) {
-
+                    catch(const std::invalid_argument& e) {
                         m_tcp_socket.close();
                         return;
                     }
 
+                    logging::trace_f("client `{}` read request {}", get_remote_addr(),
+                                     request->to_json().dump());
 
+                    // m_request_handler.handle("", request);
 
-                    m_deadline_timer.cancel(); // !!!
+                    // TODO: get response!
+
+                    // ***
 
                     async_write("ok");
 				}

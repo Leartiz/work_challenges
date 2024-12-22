@@ -5,7 +5,7 @@ build_image:
 run_server: build_image 
 	docker run -d -p 24445:24444 wc1_server
 
-# migrations for ClickHouse!
+# migrations for `ClickHouse`!
 # ------------------------------------------------------------------------
 
 GOOSE_DRIVER=clickhouse

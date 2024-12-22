@@ -58,10 +58,12 @@ namespace lez
 
                 void Listener::async_accept()
                 {
-                    auto new_client_connection = Client_connection::create(m_ioc, m_math_service);
-                    m_tcp_acceptor.async_accept(new_client_connection->get_tcp_socket(),
-                        boost::bind(&Listener::accept_handler, this, new_client_connection,
-                            boost::asio::placeholders::error));
+                    // TODO: !!!
+
+                    // auto new_client_connection = Client_connection::create(m_ioc, m_math_service);
+                    // m_tcp_acceptor.async_accept(new_client_connection->get_tcp_socket(),
+                    //     boost::bind(&Listener::accept_handler, this, new_client_connection,
+                    //         boost::asio::placeholders::error));
                 }
 
                 void Listener::accept_handler(Client_connection::ptr new_connection,

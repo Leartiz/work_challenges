@@ -6,6 +6,9 @@
 #include <boost/asio.hpp>
 #include <boost/asio/deadline_timer.hpp>
 
+#include "message_parser.h"
+
+#include "request_handler.h"
 #include "service/math_service.h"
 
 namespace lez
@@ -32,7 +35,7 @@ namespace lez
 
 				public:
 					using ptr = std::shared_ptr<Client_connection>;
-					static ptr create(io_context&, math_service&);
+                    static ptr create(io_context&, Request_handler&);
 
 				public:
                     const std::string get_local_addr() const;
@@ -42,7 +45,7 @@ namespace lez
 					void start();
 
 				private:
-					Client_connection(io_context&, math_service&);
+                    Client_connection(io_context&, Request_handler&);
 					void async_write(std::string);
 
                     void async_read_next_request();
@@ -58,20 +61,16 @@ namespace lez
 					tcp_socket m_tcp_socket;
 					deadline_timer m_deadline_timer;
 
-				private:
-                    std::uint64_t m_max_read_msg_size = 1024;
-                    std::uint64_t m_max_full_msg_size = 8192;
-
                 private:
-                    std::string m_full_message;
-                    std::string m_read_message;
-
+                    Message_parser m_message_parser;
                     std::string m_write_message;
+
+                    std::uint64_t m_max_read_msg_size = 1024;
+                    std::string m_read_message;
 
 					// services!
 				private:
-                    math_service& m_math_service;
-					//...
+                    Request_handler& m_request_handler;
 				};
 			}
 		}

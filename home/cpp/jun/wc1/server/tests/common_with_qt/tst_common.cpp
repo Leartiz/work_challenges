@@ -16,6 +16,9 @@
 
 #include "adapters/interfaces/tcp/dto/math/payload_with_expr.h"
 #include "adapters/interfaces/tcp/dto/request.h"
+#include "adapters/interfaces/tcp/message_parser.h"
+
+#include "utils/error/error_utils.h"
 
 #include "nlohmann/json.hpp"
 
@@ -192,6 +195,58 @@ void Common::test_Request_from_json_n0()
     const auto output_j = r->to_json();
     std::ostringstream sout; sout << output_j;
     qDebug() << sout.str();
+}
+
+// -----------------------------------------------------------------------
+
+void Common::test_error_utils_combine_exceptions_n0()
+{
+    using namespace lez::error_utils;
+    const auto ex = std::runtime_error("bottom some text for error");
+    const auto ex1 = std::runtime_error(combine_exceptions("middle some text for error", ex));
+    const auto ex2 = std::runtime_error(combine_exceptions("top some text for error", ex1));
+    //...
+
+    qDebug() << "An exception occurred:" << ex2.what();
+}
+
+// -----------------------------------------------------------------------
+
+void Common::test_Message_parser_parse_request_n0()
+{
+    using namespace lez::adapters::interfaces::tcp;
+    Message_parser mp;
+    mp.reset();
+
+    // ***
+
+    std::string json_bytes = R"({
+        "request_id": 12345,
+        "service": "math",
+        "action": "calculate",
+        "payload": {
+            "expression": "1 + 2 + 3 + 4 + 5"}
+        })";
+
+    std::uint32_t json_size = std::uint32_t(json_bytes.size());
+    std::string size_bytes(4, 0);
+    std::memcpy(size_bytes.data(), &json_size, sizeof(json_size));
+    std::reverse(size_bytes.begin(), size_bytes.end());
+
+    // ***
+
+    mp.add_to_buffer(std::move(size_bytes));
+    mp.add_to_buffer(std::move(json_bytes));
+
+    // ***
+
+    const auto r = mp.parse_request(); // OK!
+    qDebug() << r->to_json().dump();
+}
+
+void Common::test_Message_parser_parse_request_n1()
+{
+
 }
 
 // std library

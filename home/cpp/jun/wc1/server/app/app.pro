@@ -1,5 +1,7 @@
 TEMPLATE = app
 
+# ------------------------------------------------------------------------
+
 CONFIG += console c++20
 CONFIG -= app_bundle
 CONFIG -= qt
@@ -12,33 +14,36 @@ include(../pri_files/app_sources.pri)
 # ------------------------------------------------------------------------
 
 SOURCES += \
-    adapters/interfaces/tcp/dto/auth/auth_payload.cpp \
-    adapters/interfaces/tcp/message_parser.cpp \
-    adapters/interfaces/tcp/request_handler.cpp \
     main.cpp
 
+INCLUDEPATH += \
+    $$PWD/../app
+
 HEADERS += \
-    $$PWD/../config/config.h \
-    $$PWD/../app/adapters/interfaces/tcp/client_connection.h \
-    $$PWD/../app/adapters/interfaces/tcp/listener.h \
-    $$PWD/../app/service/impl/lua_math.h \
-    $$PWD/../app/service/math_service.h \
-    $$PWD/../app/logging/impl/boost/boost_logger.h \
-    $$PWD/../app/logging/logging.h \
-    $$PWD/../app/adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h \
-    $$PWD/../app/adapters/infrastructure/storage/log/log_storage.h \
-    $$PWD/../app/adapters/interfaces/tcp/dto/math/payload_with_expr.h \
-    $$PWD/../app/adapters/interfaces/tcp/dto/payload.h \
-    $$PWD/../app/adapters/interfaces/tcp/dto/request.h \
-    $$PWD/../app/adapters/interfaces/tcp/dto/common_validator.h \
-    $$PWD/../app/adapters/adapters/interfaces/tcp/dto/auth/auth_payload.h \
-    $$PWD/../app/adapters/adapters/interfaces/tcp/message_parser.h \
-    $$PWD/../app/adapters/adapters/interfaces/tcp/request_handler.h
+    adapters/interfaces/tcp/client_connection.h \
+    adapters/interfaces/tcp/listener.h \
+    config/server_config.h \
+    service/impl/lua_math.h \
+    service/math_service.h \
+    logging/impl/boost/boost_logger.h \
+    logging/logging.h \
+    adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h \
+    adapters/infrastructure/storage/log/log_storage.h \
+    adapters/interfaces/tcp/dto/math/payload_with_expr.h \
+    adapters/interfaces/tcp/dto/payload.h \
+    adapters/interfaces/tcp/dto/request.h \
+    adapters/interfaces/tcp/dto/common_validator.h \
+    adapters/interfaces/tcp/dto/auth/auth_payload.h \
+    adapters/interfaces/tcp/message_parser.h \
+    adapters/interfaces/tcp/request_handler.h \
+    utils/error/error_utils.h
 
 OTHER_FILES += \
     $$PWD/../.env
 
 # ------------------------------------------------------------------------
+
+# doesn't work?
 
 message("Pwd: $$PWD")
 message("Assembly Catalog: $$OUT_PWD")

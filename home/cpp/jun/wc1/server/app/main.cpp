@@ -4,7 +4,7 @@
 
 #include <boost/asio.hpp>
 
-#include "config/config.h"
+#include "config/server_config.h"
 
 #include "logging/logging.h"
 #include "logging/impl/boost/boost_logger.h"

@@ -33,6 +33,15 @@ private slots:
 
     void test_Request_from_json_n0();
 
+    // error_utils
+private slots:
+    void test_error_utils_combine_exceptions_n0();
+
+    // Message_parser (tcp)
+private slots:
+    void test_Message_parser_parse_request_n0();
+    void test_Message_parser_parse_request_n1();
+
 private slots:
     void test_std_any_to_string();
     void test_std_format();

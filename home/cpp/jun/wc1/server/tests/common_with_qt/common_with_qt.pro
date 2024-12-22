@@ -9,13 +9,16 @@ CONFIG += c++20
 
 # ------------------------------------------------------------------------
 
-include(../pri_files/common_deps.pri)
-include(../pri_files/app_sources.pri)
+message("`common_with_qt.pro` has PWD: $$PWD")
+message("`root` has PWD: $$PWD/../..")
+
+include(../../pri_files/common_deps.pri)
+include(../../pri_files/app_sources.pri)
 
 # ------------------------------------------------------------------------
 
 INCLUDEPATH += \
-    $$PWD\..\app 
+    $$PWD\..\..\app
 
 SOURCES += \
     tst_common.cpp

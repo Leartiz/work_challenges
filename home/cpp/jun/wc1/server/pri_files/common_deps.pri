@@ -1,30 +1,38 @@
 # ------------------------------------------------------------------------
 
 INCLUDEPATH += \
-    $$PWD/../dependency \
+    $$PWD/../dependency \ # json, strutil
     $$PWD/../dependency/clickhouse \
     $$PWD/../dependency/clickhouse/absl \
     $$PWD/../dependency/clickhouse/cityhash \
     $$PWD/../dependency/clickhouse/lz4 \
     $$PWD/../dependency/clickhouse/zstd \
     $$PWD/../dependency/laserpants \
-    $$PWD/../dependency/strutil
+    $$PWD/../dependency/clickhouse/contrib/absl
 
 # ------------------------------------------------------------------------
 
-win32: {
+win32: { # msvc!
+
+    LUA_VERSION = 54
     LUA_PATH = $$getenv(LUA_PATH)
     BOOST_PATH = $$getenv(BOOST_PATH)
 
 # ------------------------------------------------------------------------
 
     CLICKHOUSE_BUILD_PATH = $$PWD/../dependency/clickhouse/build/clickhouse
-    CLICKHOUSE_CONTRIB_PATH = $$CLICKHOUSE_PATH/../contrib
+    CLICKHOUSE_CONTRIB_PATH = $$CLICKHOUSE_BUILD_PATH/../contrib
 
     ABSL_BUILD_PATH =     $$CLICKHOUSE_CONTRIB_PATH/absl/absl
     CITYHASH_BUILD_PATH = $$CLICKHOUSE_CONTRIB_PATH/cityhash/cityhash
     LZ4_BUILD_PATH =      $$CLICKHOUSE_CONTRIB_PATH/lz4/lz4
     ZSTD_BUILD_PATH =     $$CLICKHOUSE_CONTRIB_PATH/zstd/zstd
+
+    message("ABSL_BUILD_PATH: $$ABSL_BUILD_PATH")
+    message("CITYHASH_BUILD_PATH: $$CITYHASH_BUILD_PATH")
+    message("LZ4_BUILD_PATH: $$LZ4_BUILD_PATH")
+    message("ZSTD_BUILD_PATH: $$ZSTD_BUILD_PATH")
+    #...
 
 # ------------------------------------------------------------------------
 
@@ -34,13 +42,13 @@ win32: {
 
     LIBS += -lws2_32 -lmswsock
 
-    LIBS += -L"$$LUA_PATH/lib" -llua51
+    LIBS += -L"$$LUA_PATH" -llua$$LUA_VERSION
     LIBS += -L"$$BOOST_PATH/stage/lib"
 
     CONFIG(debug, debug|release) {
         message("Building in Debug mode")
 
-        LIBS += -L"$$CLICKHOUSE_PATH/Debug"
+        LIBS += -L"$$CLICKHOUSE_BUILD_PATH/Debug"
         LIBS += -lclickhouse-cpp-lib
 
         LIBS += -L"$$ABSL_BUILD_PATH/Debug"
@@ -52,12 +60,12 @@ win32: {
         LIBS += -L"$$LZ4_BUILD_PATH/Debug"
         LIBS += -llz4
 
-        LIBS += -L"$$ZSTD_PATH/Debug"
+        LIBS += -L"$$ZSTD_BUILD_PATH/Debug"
         LIBS += -lzstdstatic
     } else {
         message("Building in Release mode")
 
-        LIBS += -L"$$CLICKHOUSE_PATH/Release"
+        LIBS += -L"$$CLICKHOUSE_BUILD_PATH/Release"
         LIBS += -lclickhouse-cpp-lib
 
         LIBS += -L"$$ABSL_BUILD_PATH/Release"
@@ -69,7 +77,7 @@ win32: {
         LIBS += -L"$$LZ4_BUILD_PATH/Release"
         LIBS += -llz4
 
-        LIBS += -L"$$ZSTD_PATH/Release"
+        LIBS += -L"$$ZSTD_BUILD_PATH/Release"
         LIBS += -lzstdstatic
     }
 
@@ -97,6 +105,6 @@ win32: {
         $$BOOST_LIBRARY_DIR/libboost_filesystem.a
 
     LIBS += -lpthread
-    
 }
 
+# ------------------------------------------------------------------------

@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef SERVER_CONFIG_H
+#define SERVER_CONFIG_H
 
 #include <cstdint>
 #include <string>
@@ -38,4 +38,4 @@ namespace lez
     };
 }
 
-#endif // CONFIG_H
+#endif // SERVER_CONFIG_H

@@ -15,11 +15,13 @@ namespace lez::adapters::interfaces::tcp
     class Request_handler final
     {
     public:
-        Request_handler();
+        Request_handler(
+            Math_service& math_service);
 
     public:
         void handle(const std::string& client_id, dto::Sp_request r);
 
+        // services/use-cases!
     private:
         Math_service& m_math_service;
     };

@@ -2,7 +2,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "config.h"
+#include "server_config.h"
 
 #include "laserpants/dotenv/dotenv.h"
 
