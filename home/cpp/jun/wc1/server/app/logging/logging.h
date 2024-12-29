@@ -33,6 +33,10 @@ namespace lez
         class Logger
         {
         public:
+            static constexpr char DEFAULT_NAME[] = "main";
+            explicit Logger(const std::string& name = DEFAULT_NAME);
+
+        public:
             virtual void to(const std::string& message, Level level) const;
 
             virtual void trace(const std::string& message) const = 0;
@@ -46,12 +50,15 @@ namespace lez
 
         public:
             virtual ~Logger() = default;
+
+        protected:
+            std::string m_name; // module?
         };
 
         // ---------------------------------------------------------------
 
         bool is_empty();
-        void set_logger(std::shared_ptr<Logger> logger);
+        void set_global_logger(std::shared_ptr<Logger> logger);
         std::shared_ptr<Logger> get_logger();
 
         // global mt unsafe!?
@@ -112,6 +119,20 @@ namespace lez
         void fatal_f(const std::string& format, Args&&... args)
         {
             to_f(Level::fatal, format, args...);
+        }
+
+        // ---------------------------------------------------------------
+
+        template <class... Args>
+        void logf(const Level level, const std::string& module_name,
+                  const std::string& format, Args&&... args)
+        {
+            std::string message{ module_name + " | " };
+
+            message += std::vformat(format,
+                std::make_format_args(args...));
+
+            to(level, message);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace lez
             return global_logger == nullptr;
         }
 
-        void set_logger(std::shared_ptr<Logger> logger)
+        void set_global_logger(std::shared_ptr<Logger> logger)
         {
             if (!is_empty()) {
                 throw std::runtime_error{ "global logger already set" };
@@ -67,13 +67,17 @@ namespace lez
             global_logger = logger;
         }
 
-        std::shared_ptr<Logger> get_logger()
+        std::shared_ptr<Logger> get_logger() // unsafe?
         {
             std::lock_guard<std::mutex> _{ mx };
             return global_logger;
         }
 
         // ---------------------------------------------------------------
+
+        Logger::Logger(const std::string& name)
+            : m_name{ name }
+        {}
 
         void Logger::to(const std::string& message, Level level) const
         {

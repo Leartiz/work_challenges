@@ -1,5 +1,5 @@
-#ifndef BOOST_LOGGER_H
-#define BOOST_LOGGER_H
+#ifndef MAIN_BOOST_LOGGER_H
+#define MAIN_BOOST_LOGGER_H
 
 #include <string>
 
@@ -11,7 +11,9 @@ namespace lez
     {
         namespace impl
         {
-            class Boost_logger final : public Logger
+            // or trivial?
+
+            class Main_boost_logger final : public Logger
             {
             public:
                 struct Params final
@@ -31,7 +33,7 @@ namespace lez
                 };
 
             public:
-                explicit Boost_logger(const Params&);
+                explicit Main_boost_logger(const Params&);
 
             public:
                 void trace(const std::string& message) const override;
@@ -44,10 +46,10 @@ namespace lez
                 void fatal(const std::string& message) const override;
 
             public:
-                ~Boost_logger() override;
+                ~Main_boost_logger() override = default;
             };
         }
     }
 }
 
-#endif // BOOST_LOGGER_H
+#endif // MAIN_BOOST_LOGGER_H

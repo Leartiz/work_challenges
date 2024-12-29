@@ -13,7 +13,7 @@ message("`common_with_qt.pro` has PWD: $$PWD")
 message("`root` has PWD: $$PWD/../..")
 
 include(../../pri_files/common_deps.pri)
-include(../../pri_files/app_sources.pri)
+include(../../pri_files/app_codes.pri)
 
 # ------------------------------------------------------------------------
 

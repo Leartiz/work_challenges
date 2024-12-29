@@ -37,10 +37,17 @@ private slots:
 private slots:
     void test_error_utils_combine_exceptions_n0();
 
+    // uuid_utils
+private slots:
+    void test_uuid_utils_gen_n0();
+
     // Message_parser (tcp)
 private slots:
     void test_Message_parser_parse_request_n0();
     void test_Message_parser_parse_request_n1();
+
+    void test_Message_parser_parse_request_err_n0();
+    void test_Message_parser_parse_request_err_n1();
 
 private slots:
     void test_std_any_to_string();

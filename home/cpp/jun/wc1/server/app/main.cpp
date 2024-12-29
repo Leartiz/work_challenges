@@ -7,7 +7,7 @@
 #include "config/server_config.h"
 
 #include "logging/logging.h"
-#include "logging/impl/boost/boost_logger.h"
+#include "logging/impl/boost/main_boost_logger.h"
 
 #include "service/impl/lua_math.h"
 #include "adapters/interfaces/tcp/listener.h"
@@ -21,15 +21,16 @@ using namespace lez;
 
 void initialize_logging(const Config& config)
 {
-    using logging::impl::Boost_logger;
+    using Main_boost_logger =
+        logging::impl::Main_boost_logger;
 
-    Boost_logger::Params params;
+    Main_boost_logger::Params params;
     params.level = logging::Level_converter::to_level(config.log_level);
 
     //...
 
-    auto logger = std::make_shared<Boost_logger>(params);
-    logging::set_logger(logger);
+    auto logger = std::make_shared<Main_boost_logger>(params);
+    logging::set_global_logger(logger);
 }
 
 void test_logging()
@@ -61,7 +62,8 @@ void run_io_context(boost::asio::io_context& ioc) {
     try {
         ioc.run();
     } catch (const std::exception& e) {
-
+        logging::fatal_f("run io context failed. With err: {}", e.what());
+        exit(-1);
     }
 }
 
@@ -93,7 +95,9 @@ int main() /* or wrap in a class: App */
 
         /* services */
 
-        Lua_math math_service;
+        const service::Services services{
+            .math_service = std::make_shared<Lua_math>(),
+        };
 
         /* infrastructure */
 
@@ -101,18 +105,20 @@ int main() /* or wrap in a class: App */
 
         /* interfaces */
 
-        Listener listener(ioc, math_service, c.port);
+
+
+        Listener listener(ioc, services, c.port);
 
         // ***
 
         boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work_guard =
-                boost::asio::make_work_guard(ioc);
+            boost::asio::make_work_guard(ioc);
         const size_t num_threads = std::thread::hardware_concurrency();
 
         std::vector<std::thread> threads;
-
         for (size_t i = 0; i < num_threads; ++i) {
-            threads.emplace_back(run_io_context, std::ref(ioc));
+            threads.emplace_back(run_io_context,
+                                 std::ref(ioc));
         }
 
         for (auto& thread : threads) {

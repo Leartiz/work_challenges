@@ -6,7 +6,7 @@
 #include <boost/asio/ip/address.hpp>
 
 #include "client_connection.h"
-#include "service/math_service.h"
+#include "service/services.h"
 
 namespace lez
 {
@@ -18,6 +18,8 @@ namespace lez
             {
                 class Listener final
                 {
+                public:
+
                     // short names!
                 public:
                     using io_context = boost::asio::io_context;
@@ -25,15 +27,13 @@ namespace lez
                     using tcp_endpoint = boost::asio::ip::tcp::endpoint;
                     using error_code = boost::system::error_code;
 
-                    using math_service = service::contract::Math_service;
+                public:
+                    using Services = service::Services;
 
                 public:
-
-                    // TODO: IServices!!!
-
-                    Listener(io_context&, math_service&, const uint16_t port);
-                    Listener(io_context&, math_service&, const tcp_endpoint&);
-                    Listener(io_context&, math_service&, 
+                    Listener(io_context&, const Services& services, const uint16_t port);
+                    Listener(io_context&, const Services& services, const tcp_endpoint&);
+                    Listener(io_context&, const Services& services,
                         const std::string& ip, const uint16_t port);
 
                 private:
@@ -46,7 +46,7 @@ namespace lez
                     tcp_acceptor m_tcp_acceptor;
 
                 private:
-                    math_service& m_math_service;
+                    const Services m_services;
                 };
             }
         }        

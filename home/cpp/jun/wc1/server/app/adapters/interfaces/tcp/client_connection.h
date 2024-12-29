@@ -8,7 +8,7 @@
 
 #include "message_parser.h"
 
-#include "request_handler.h"
+#include "client_request_handler.h"
 #include "service/math_service.h"
 
 namespace lez
@@ -30,12 +30,13 @@ namespace lez
 					using tcp_socket = boost::asio::ip::tcp::socket;
 					using deadline_timer = boost::asio::deadline_timer;
 					using error_code = boost::system::error_code;
+                    using endpoint = boost::asio::ip::tcp::endpoint;
 
                     using math_service = service::contract::Math_service;
 
 				public:
 					using ptr = std::shared_ptr<Client_connection>;
-                    static ptr create(io_context&, Request_handler&);
+                    static ptr create(io_context&, service::Services);
 
 				public:
                     const std::string get_local_addr() const;
@@ -44,10 +45,11 @@ namespace lez
 					tcp_socket& get_tcp_socket();
 					void start();
 
-				private:
-                    Client_connection(io_context&, Request_handler&);
-					void async_write(std::string);
+				private:                    
+                    Client_connection(io_context&, const service::Services&);
+                    void correct_close(const error_code& err = {});
 
+					void async_write(std::string);
                     void async_read_next_request();
                     void async_read_part_request();
 
@@ -58,19 +60,21 @@ namespace lez
 
 				private:
 					io_context& m_ioc;
+
 					tcp_socket m_tcp_socket;
 					deadline_timer m_deadline_timer;
 
                 private:
-                    Message_parser m_message_parser;
-                    std::string m_write_message;
-
                     std::uint64_t m_max_read_msg_size = 1024;
                     std::string m_read_message;
+                    Message_parser m_message_parser;
+
+                private:
+                    std::string m_write_message;
 
 					// services!
 				private:
-                    Request_handler& m_request_handler;
+                    Client_request_handler m_handler;
 				};
 			}
 		}

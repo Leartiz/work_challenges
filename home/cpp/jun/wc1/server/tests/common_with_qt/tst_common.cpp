@@ -14,11 +14,12 @@
 #include "service/math_service.h"
 #include "service/impl/lua_math.h"
 
-#include "adapters/interfaces/tcp/dto/math/payload_with_expr.h"
+#include "adapters/interfaces/tcp/dto/math/req_payload_with_expr.h"
 #include "adapters/interfaces/tcp/dto/request.h"
 #include "adapters/interfaces/tcp/message_parser.h"
 
 #include "utils/error/error_utils.h"
+#include "utils/uuid/uuid_utils.h"
 
 #include "nlohmann/json.hpp"
 
@@ -115,7 +116,7 @@ void Common::test_Payload_with_expr_to_json_n0()
     using nlohmann::json;
     using namespace lez::adapters::interfaces::tcp::dto;
 
-    math::Payload_with_expr pd;
+    math::Req_payload_with_expr pd;
     pd.set_expr("1 + 2 + 3 + 4 + 5");
     const auto j = pd.to_json();
 
@@ -130,7 +131,7 @@ void Common::test_Payload_with_expr_from_json_n0()
 
     const std::string expr = "1 + 2 + 3 + 4 + 5";
 
-    math::Payload_with_expr pd;
+    math::Req_payload_with_expr pd;
     const json j = {
         { "payload", {
               { "expression", expr.c_str() }
@@ -162,10 +163,10 @@ void Common::test_Request_to_json_n1()
     r.set_service_name("math");
     r.set_action_name("calculate");
 
-    math::Payload_with_expr pd;
+    math::Req_payload_with_expr pd;
     json j = { { "payload", { { "expression", "1 + 2 + 3 + 4 + 5" } } } };
     pd.from_json(j);
-    r.set_payload(std::make_shared<math::Payload_with_expr>(pd));
+    r.set_payload(std::make_shared<math::Req_payload_with_expr>(pd));
 
     // ***
 
@@ -210,6 +211,15 @@ void Common::test_error_utils_combine_exceptions_n0()
     qDebug() << "An exception occurred:" << ex2.what();
 }
 
+void Common::test_uuid_utils_gen_n0()
+{
+    using namespace lez::uuid_utils;
+    for (int i = 0; i < 3; ++i) {
+        qDebug() << "uuid value:" << gen();
+    }
+}
+
+// Message parser
 // -----------------------------------------------------------------------
 
 void Common::test_Message_parser_parse_request_n0()
@@ -225,8 +235,9 @@ void Common::test_Message_parser_parse_request_n0()
         "service": "math",
         "action": "calculate",
         "payload": {
-            "expression": "1 + 2 + 3 + 4 + 5"}
-        })";
+            "expression": "1 + 2 + 3 + 4 + 5"
+        }
+    })";
 
     std::uint32_t json_size = std::uint32_t(json_bytes.size());
     std::string size_bytes(4, 0);
@@ -246,7 +257,46 @@ void Common::test_Message_parser_parse_request_n0()
 
 void Common::test_Message_parser_parse_request_n1()
 {
+    // TODO: !
+}
 
+// -----------------------------------------------------------------------
+
+void Common::test_Message_parser_parse_request_err_n0()
+{
+    using namespace lez::adapters::interfaces::tcp;
+    Message_parser mp;
+    mp.reset();
+
+    // ***
+
+    std::string json_bytes = R"({
+        "service": "math",
+        "action": "calculate",
+        "payload": {
+            "expression": "1 + 2 + 3 + 4 + 5"
+        }
+    })";
+
+    std::uint32_t json_size = std::uint32_t(json_bytes.size());
+    std::string size_bytes(4, 0);
+    std::memcpy(size_bytes.data(), &json_size, sizeof(json_size));
+    std::reverse(size_bytes.begin(), size_bytes.end());
+
+    // ***
+
+    mp.add_to_buffer(std::move(size_bytes));
+    mp.add_to_buffer(std::move(json_bytes));
+
+    // ***
+
+    QVERIFY_THROWS_EXCEPTION(std::invalid_argument,
+        mp.parse_request());
+}
+
+void Common::test_Message_parser_parse_request_err_n1()
+{
+    // TODO: !
 }
 
 // std library

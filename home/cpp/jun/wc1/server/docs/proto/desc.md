@@ -61,10 +61,12 @@ The payload is determined by a combination:
 ```json
 {
     "request_id": "<uint64>",
-    "status_code": "<HTTP status code>",
+    "status_code": "<HTTP status code as int>",
 
     // or
-    "result": "<float64>",
+    "result": {
+        "value": "<float64>"
+    },
     "error": {
         "message": "<string>"
     },
@@ -86,7 +88,9 @@ The payload is determined by a combination:
     "request_id": 12345678901234567890,
     "status_code": 200,
 
-    "result": 7.0,
+    "result": {
+        "value": 7.0
+    },
     "error": null,
 
     "metadata": {

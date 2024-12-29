@@ -6,7 +6,8 @@
 
 namespace lez::error_utils
 {
-    std::string combine_exceptions(const std::string& text, const std::exception& e);
+    std::string combine_exceptions(const std::string& text,
+                                   const std::exception& e);
 }
 
 #endif // ERROR_UTILS_H

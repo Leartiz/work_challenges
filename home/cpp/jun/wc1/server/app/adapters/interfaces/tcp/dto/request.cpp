@@ -2,7 +2,7 @@
 
 #include "request.h"
 #include "common_validator.h"
-#include "math/payload_with_expr.h"
+#include "math/req_payload_with_expr.h"
 
 namespace
 {
@@ -30,7 +30,7 @@ namespace lez::adapters::interfaces::tcp::dto
 
 // -----------------------------------------------------------------------
 
-    void Request::set_payload(std::shared_ptr<Payload> pd)
+    void Request::set_payload(Sp_req_payload pd)
     {
         m_payload = pd;
     }
@@ -52,24 +52,25 @@ namespace lez::adapters::interfaces::tcp::dto
     std::shared_ptr<Request> Request::from_json(const nlohmann::json& j)
     {
         Request request;
-        if (j.contains(ID_JSON_KEY)) {
-            request.m_id = j[ID_JSON_KEY].get<std::uint64_t>();
+        if (j.contains(Json_key::ID)) {
+            request.m_id = j[Json_key::ID].get<std::uint64_t>();
         }
         else {
-            throw std::runtime_error(std::format("missing `{}` in JSON", ID_JSON_KEY));
+            throw std::runtime_error(
+                std::format("missing `{}` in JSON", Json_key::ID));
         }
 
         // ***
 
-        const auto service_name = parse_str_from_json(j, SERVICE_JSON_KEY,
-                    std::format("missing `{}` in JSON", SERVICE_JSON_KEY));
+        const auto service_name = parse_str_from_json(j, Json_key::SERVICE,
+                    std::format("missing `{}` in JSON", Json_key::SERVICE));
         Common_validator::string_not_empty(service_name,
-                    std::format("`{}` is empty string", SERVICE_JSON_KEY));
+                    std::format("`{}` is empty string", Json_key::SERVICE));
 
-        const auto action_name = parse_str_from_json(j, ACTION_JSON_KEY,
-                    std::format("missing `{}` in JSON", ACTION_JSON_KEY));
+        const auto action_name = parse_str_from_json(j, Json_key::ACTION,
+                    std::format("missing `{}` in JSON", Json_key::ACTION));
         Common_validator::string_not_empty(action_name,
-                    std::format("`{}` is empty string", ACTION_JSON_KEY));
+                    std::format("`{}` is empty string", Json_key::ACTION));
 
         request.m_service_name = service_name;
         request.m_action_name = action_name;
@@ -77,7 +78,7 @@ namespace lez::adapters::interfaces::tcp::dto
         // ***
 
         if (service_name == "math" && action_name == "calculate") { // !
-            const auto payload = std::make_shared<math::Payload_with_expr>();
+            const auto payload = std::make_shared<math::Req_payload_with_expr>();
             payload->from_json(j); // void!
             request.m_payload = payload;
         }
@@ -106,9 +107,9 @@ namespace lez::adapters::interfaces::tcp::dto
     const nlohmann::json Request::to_json() const
     {
         nlohmann::json j;
-        j[ID_JSON_KEY] = m_id;
-        j[SERVICE_JSON_KEY] = m_service_name;
-        j[ACTION_JSON_KEY] = m_action_name;
+        j[Json_key::ID] = m_id;
+        j[Json_key::SERVICE] = m_service_name;
+        j[Json_key::ACTION] = m_action_name;
 
         if (m_payload) {
            auto j_payload = m_payload->to_json(); // ?
@@ -117,7 +118,7 @@ namespace lez::adapters::interfaces::tcp::dto
            }
         }
         else {
-            j[Payload::PAYLOAD_JSON_KEY] = nullptr;
+            j[Request_payload::Json_key::PAYLOAD] = nullptr; // !
         }
 
         return j;

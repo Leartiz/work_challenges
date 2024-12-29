@@ -7,7 +7,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "payload.h"
+#include "request_payload.h"
 
 namespace lez::adapters::interfaces::tcp::dto
 {
@@ -16,9 +16,12 @@ namespace lez::adapters::interfaces::tcp::dto
         friend class std::shared_ptr<Request>;
 
     public:
-        static constexpr char ID_JSON_KEY[] = "request_id";
-        static constexpr char SERVICE_JSON_KEY[] = "service";
-        static constexpr char ACTION_JSON_KEY[] = "action";
+        struct Json_key final
+        {
+            static constexpr char ID[]      = "request_id";
+            static constexpr char SERVICE[] = "service";
+            static constexpr char ACTION[]  = "action";
+        };
 
     public:
         static std::shared_ptr<Request> from_json(const nlohmann::json&);
@@ -26,7 +29,7 @@ namespace lez::adapters::interfaces::tcp::dto
 
     public:
         Request();
-        void set_payload(std::shared_ptr<Payload>);
+        void set_payload(Sp_req_payload);
         void set_service_name(const std::string&);
         void set_action_name(const std::string&);
 
@@ -36,7 +39,7 @@ namespace lez::adapters::interfaces::tcp::dto
         std::string m_action_name;
 
     private:
-        std::shared_ptr<Payload> m_payload;
+        Sp_req_payload m_payload;
     };
 
     using Sp_request = std::shared_ptr<Request>;

@@ -2,11 +2,15 @@
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
-#include "boost_logger.h"
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/expressions.hpp>
+
+#include "main_boost_logger.h"
 
 namespace lez
 {
@@ -28,22 +32,34 @@ namespace lez
                 case Level::error: return severity_level::error;
                 case Level::fatal: return severity_level::fatal;
                 }
+
+                return severity_level::trace; // default?
             }
         }
 
         namespace impl
         {
-            Boost_logger::Params::Params()
+            Main_boost_logger::Params::Params()
                 : enable_file(true), dir_name("logs"), file_name("actions")
                 , rotation_size(5 * 1024 * 1024), max_files(5)
                 , level(Level::trace) {}
 
             // -----------------------------------------------------------
 
-            Boost_logger::Boost_logger(const Params& options)
+            Main_boost_logger::Main_boost_logger(const Params& options)
             {
-                const std::string format =
-                    "[%TimeStamp%] [%Severity%]\t[%ThreadID%]: %Message%";
+                namespace attr = boost::log::attributes;
+                namespace expr = boost::log::expressions;
+
+                const auto format = expr::stream
+                    << expr::format_date_time<boost::posix_time::ptime>(
+                        "TimeStamp", "[%d.%m.%Y %H:%M:%S.%f]") << " "
+                    << "[" << boost::log::trivial::severity << "] "
+
+                    << "[" << expr::attr<attr::current_thread_id::value_type>("ThreadID") << "] "
+                    << ": " << expr::smessage;
+
+                // ***
 
                 boost::log::add_console_log(
                     std::cout, boost::log::keywords::format = format); // ?
@@ -72,37 +88,32 @@ namespace lez
 
             // -----------------------------------------------------------
 
-            void Boost_logger::trace(const std::string& message) const
+            void Main_boost_logger::trace(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(trace) << message;
             }
-
-            void Boost_logger::debug(const std::string& message) const
+            void Main_boost_logger::debug(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(debug) << message;
             }
 
-            void Boost_logger::info(const std::string& message) const
+            void Main_boost_logger::info(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(info) << message;
             }
-
-            void Boost_logger::warning(const std::string& message) const
+            void Main_boost_logger::warning(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(warning) << message;
             }
 
-            void Boost_logger::error(const std::string& message) const
+            void Main_boost_logger::error(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(error) << message;
             }
-
-            void Boost_logger::fatal(const std::string& message) const
+            void Main_boost_logger::fatal(const std::string& message) const
             {
                 BOOST_LOG_TRIVIAL(fatal) << message;
             }
-
-            Boost_logger::~Boost_logger() {}
         }
     }
 }

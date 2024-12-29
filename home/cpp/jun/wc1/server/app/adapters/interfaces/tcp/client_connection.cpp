@@ -1,7 +1,14 @@
 #include <boost/bind.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
+#include "utils/uuid/uuid_utils.h"
+#include "service/services.h"
 #include "client_connection.h"
 #include "logging/logging.h"
+#include "tcp_common.h"
+
+#include "dto/response.h"
 #include "dto/request.h"
 
 namespace lez
@@ -11,32 +18,89 @@ namespace lez
 		namespace interfaces 
 		{
 			namespace tcp
-			{                
-                Client_connection::Client_connection(io_context& ioc, Request_handler& rh)
-					: m_ioc{ ioc }, m_tcp_socket{ ioc }
+            {
+                namespace
+                {
+                    std::string ep_to_full_addr(const Client_connection::endpoint& ep)
+                    {
+                        const auto addr = ep.address();
+                        const auto port = ep.port();
+
+                        std::ostringstream sout;
+                        sout << addr << ":" << port;
+
+                        return sout.str();
+                    }
+                }
+
+                // -------------------------------------------------------
+
+                Client_connection::Client_connection(io_context& ioc,
+                                                     const service::Services& services)
+                    : m_ioc{ ioc }, m_tcp_socket{ ioc }
 					, m_deadline_timer{ ioc }
-                    , m_request_handler{ rh }
+                    , m_handler{ uuid_utils::gen(), services } // has id?
                 {}
 
-				Client_connection::ptr
-                    Client_connection::create(io_context& ioc, Request_handler& rh)
+                Client_connection::ptr
+                    Client_connection::create(io_context& ioc,
+                                              service::Services services)
 				{
                     return std::shared_ptr<Client_connection>(
-                        new Client_connection(ioc, rh));
+                        new Client_connection(ioc, std::move(services)));
 				}
+
+                void Client_connection::correct_close(const error_code& err)
+                {
+                    m_deadline_timer.cancel(); // !?
+                    if (err) {
+                        logging::logf(logging::Level::warning, Common::MODULE_NAME,
+                                      "client [{}] is or will be disconnected due to an error: {}",
+                                      get_remote_addr(), err.to_string());
+                    }
+
+                    if (!m_tcp_socket.is_open()) {
+                        return;
+                    }
+
+                    // ***
+
+                    boost::system::error_code shutdown_err;
+                    m_tcp_socket.shutdown(
+                                // Shutdown both send and receive on the socket.
+                                boost::asio::ip::tcp::socket::shutdown_both,
+                                shutdown_err);
+                    if (shutdown_err)
+                    {
+                        logging::logf(logging::Level::warning, Common::MODULE_NAME,
+                                      "failed to shutdown socket for client [{}]: {}",
+                                      get_remote_addr(), shutdown_err.message());
+                    }
+
+                    boost::system::error_code close_err;
+                    m_tcp_socket.close(close_err);
+                    if (close_err)
+                    {
+                        logging::logf(logging::Level::warning, Common::MODULE_NAME,
+                                      "failed to close socket for client [{}]: {}",
+                                      get_remote_addr(), close_err.message());
+                    }
+
+                    return;
+                }
 
                 // -----------------------------------------------------------------
 
                 const std::string Client_connection::get_local_addr() const
                 {
-                    return m_tcp_socket.local_endpoint()
-                            .address().to_string();
+                    const auto remote_ep = m_tcp_socket.local_endpoint();
+                    return ep_to_full_addr(remote_ep);
                 }
 
                 const std::string Client_connection::get_remote_addr() const
                 {
-                    return m_tcp_socket.remote_endpoint()
-                            .address().to_string();
+                    const auto remote_ep = m_tcp_socket.remote_endpoint();
+                    return ep_to_full_addr(remote_ep);
                 }
 
 				Client_connection::tcp_socket&
@@ -86,7 +150,7 @@ namespace lez
 				void Client_connection::async_write(std::string w_message)
 				{
 					using namespace boost::asio::placeholders;
-                    m_write_message = w_message;
+                    m_write_message = std::move(w_message);
                     m_tcp_socket.async_write_some(boost::asio::buffer(m_write_message),
 						boost::bind(&Client_connection::write_handler,
 							shared_from_this(), error, bytes_transferred));
@@ -99,53 +163,58 @@ namespace lez
 					size_t bytes_transferred)
 				{                    
                     if (err) {
-                        logging::warning_f("client `{}` disconnected. With err: {}",
-                                           get_remote_addr(), err.to_string());
-						m_tcp_socket.close();
-						return;
+                        correct_close(err); // transfer!
+                        return;
 					}
 
-                    // ***
+                    logging::logf(logging::Level::trace, Common::MODULE_NAME,
+                                  "{} bytes read from client [{}]",
+                                  bytes_transferred, get_remote_addr());
 
-                    logging::trace_f("client `{}` read byte count {}", get_remote_addr(),
-                                     bytes_transferred);
-
-                    // ***
+                    // work with byte array!
 
                     dto::Sp_request request;
                     try {
-                        m_message_parser.add_to_buffer(m_read_message.substr(0, bytes_transferred));
-                        logging::trace_f("client `{}` has full message size {}", get_remote_addr(),
-                                         m_message_parser.get_buffer_size());
+                        m_message_parser.add_to_buffer(
+                            m_read_message.substr(0, bytes_transferred));
+
+                        logging::logf(logging::Level::trace, Common::MODULE_NAME,
+                                      "client [{}] has full message size {}",
+                                      get_remote_addr(), m_message_parser.get_buffer_size());
 
                         request = m_message_parser.parse_request();
                         m_deadline_timer.cancel(); // !?
                     }
-                    catch(const std::length_error& e) {
+                    catch(const std::length_error&) {
                         async_read_part_request();
                         return;
                     }
                     catch(const std::overflow_error& e) {
-                        logging::warning_f("client `{}` disconnected. With err: {}",
-                                           get_remote_addr(), "full message is too long");
-                        m_tcp_socket.close();
+                        logging::logf(logging::Level::warning, Common::MODULE_NAME,
+                                      "client [{}] sent a message that was too long. Details:",
+                                      get_remote_addr(), e.what());
+
+                        // there will be no answer!?
+                        correct_close();
                         return;
                     }
                     catch(const std::invalid_argument& e) {
-                        m_tcp_socket.close();
+                        logging::logf(logging::Level::warning, Common::MODULE_NAME,
+                                      "client [{}] sent an incorrect message. Details: {}",
+                                      get_remote_addr(), e.what());
+
+                        correct_close();
                         return;
                     }
 
-                    logging::trace_f("client `{}` read request {}", get_remote_addr(),
-                                     request->to_json().dump());
-
-                    // m_request_handler.handle("", request);
-
-                    // TODO: get response!
+                    logging::logf(logging::Level::trace, Common::MODULE_NAME,
+                                  "client [{}] sent a request {}",
+                                  get_remote_addr(), request->to_json().dump());
 
                     // ***
 
-                    async_write("ok");
+                    const auto response = m_handler.handle(request);
+                    async_write(response->to_json().dump());
 				}
 
 				void Client_connection::write_handler(const error_code& err,
