@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <cstdint>
+#include <chrono>
 
 #include <nlohmann/json.hpp>
 
@@ -13,6 +14,9 @@ namespace lez::adapters::interfaces::tcp::dto
 {
     class Response final
     {
+    public:
+        using Sp = std::shared_ptr<Response>; // !
+
     public:
         enum class Status_code : int // as HTTP
         {
@@ -63,14 +67,26 @@ namespace lez::adapters::interfaces::tcp::dto
         };
 
     public:
+        static Sp sucess(std::uint64_t request_id, std::shared_ptr<Response_result> rr);
+
+    public:
+        static Sp bad_request(std::uint64_t request_id, const std::string&);
+        static Sp not_found(std::uint64_t request_id, const std::string&);
+        static Sp internal_server_error(std::uint64_t request_id, const std::string&);
+
+    public:
         Response(std::uint64_t id, int status_code, std::shared_ptr<Error> err);
         Response(std::uint64_t id, int status_code, std::shared_ptr<Response_result> rr);
+
         void set_metadata(std::shared_ptr<Metadata> metadata);
+        void update_metada(std::chrono::system_clock::time_point);
 
         const nlohmann::json to_json() const;
 
     private:
         std::uint64_t m_request_id;
+
+    private:
         int m_status_code{ (int)Status_code::OK };
 
         // or
@@ -81,9 +97,6 @@ namespace lez::adapters::interfaces::tcp::dto
     private:
         std::shared_ptr<Metadata> m_metadata;
     };
-
-    using Sp_response =
-        std::shared_ptr<Response>;
 }
 
 #endif // RESPONSE_H

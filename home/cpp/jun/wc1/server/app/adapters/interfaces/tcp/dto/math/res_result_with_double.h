@@ -7,6 +7,11 @@ namespace lez::adapters::interfaces::tcp::dto::math
     {
     public:
         Res_result_with_double();
+
+        // TODO: !!!
+
+    private:
+        double value;
     };
 }
 

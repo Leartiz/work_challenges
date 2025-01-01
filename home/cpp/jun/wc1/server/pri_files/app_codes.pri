@@ -2,7 +2,7 @@ message("`app_sources.pri` has PWD: $$PWD")
 
 HEADERS += \
     $$PWD/../app/adapters/interfaces/tcp/client_connection.h \
-    $$PWD/../app/adapters/interfaces/tcp/client_request_handler.h \
+    $$PWD/../app/adapters/interfaces/tcp/client_context.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/auth/auth_req_payload.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/math/req_payload_with_expr.h \
     $$PWD/../app/adapters/interfaces/tcp/dto/math/res_result_with_double.h \
@@ -10,6 +10,8 @@ HEADERS += \
     $$PWD/../app/adapters/interfaces/tcp/dto/response_result.h \
     $$PWD/../app/adapters/interfaces/tcp/listener.h \
     $$PWD/../app/adapters/interfaces/tcp/message_creator.h \
+    $$PWD/../app/adapters/interfaces/tcp/request_context.h \
+    $$PWD/../app/adapters/interfaces/tcp/request_handler.h \
     $$PWD/../app/adapters/interfaces/tcp/tcp_common.h \
     $$PWD/../app/config/server_config.h \
     $$PWD/../app/logging/impl/boost/main_boost_logger.h \
@@ -27,12 +29,14 @@ HEADERS += \
     $$PWD/../app/adapters/interfaces/tcp/dto/response.h
 
 SOURCES += \
-    $$PWD/../app/adapters/interfaces/tcp/client_request_handler.cpp \
+    $$PWD/../app/adapters/interfaces/tcp/client_context.cpp \
     $$PWD/../app/adapters/interfaces/tcp/dto/auth/auth_req_payload.cpp \
     $$PWD/../app/adapters/interfaces/tcp/dto/math/req_payload_with_expr.cpp \
     $$PWD/../app/adapters/interfaces/tcp/dto/math/res_result_with_double.cpp \
     $$PWD/../app/adapters/interfaces/tcp/dto/response_result.cpp \
     $$PWD/../app/adapters/interfaces/tcp/message_creator.cpp \
+    $$PWD/../app/adapters/interfaces/tcp/request_context.cpp \
+    $$PWD/../app/adapters/interfaces/tcp/request_handler.cpp \
     $$PWD/../app/adapters/interfaces/tcp/tcp_common.cpp \
     $$PWD/../app/config/server_config.cpp \
     $$PWD/../app/logging/impl/boost/main_boost_logger.cpp \

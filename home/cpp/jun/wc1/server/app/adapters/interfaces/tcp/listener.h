@@ -18,8 +18,6 @@ namespace lez
             {
                 class Listener final
                 {
-                public:
-
                     // short names!
                 public:
                     using io_context = boost::asio::io_context;
@@ -46,7 +44,7 @@ namespace lez
                     tcp_acceptor m_tcp_acceptor;
 
                 private:
-                    const Services m_services;
+                    Request_handler m_handler;
                 };
             }
         }        

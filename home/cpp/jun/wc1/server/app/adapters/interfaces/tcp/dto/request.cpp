@@ -2,7 +2,9 @@
 
 #include "request.h"
 #include "common_validator.h"
+
 #include "math/req_payload_with_expr.h"
+#include "service/math_service.h"
 
 namespace
 {
@@ -47,6 +49,28 @@ namespace lez::adapters::interfaces::tcp::dto
         m_action_name = str;
     }
 
+    // -----------------------------------------------------------------------
+
+    std::uint64_t Request::get_id() const
+    {
+        return m_id;
+    }
+
+    const std::string& Request::get_service_name() const
+    {
+        return m_service_name;
+    }
+
+    const std::string& Request::get_action_name() const
+    {
+        return m_action_name;
+    }
+
+    Sp_req_payload Request::get_payload() const
+    {
+        return m_payload;
+    }
+
 // -----------------------------------------------------------------------
 
     std::shared_ptr<Request> Request::from_json(const nlohmann::json& j)
@@ -77,7 +101,8 @@ namespace lez::adapters::interfaces::tcp::dto
 
         // ***
 
-        if (service_name == "math" && action_name == "calculate") { // !
+        using namespace service::contract;
+        if (service_name == Math_service::SERVICE_NAME && action_name == Math_service::Action::CALCULATE) { // !
             const auto payload = std::make_shared<math::Req_payload_with_expr>();
             payload->from_json(j); // void!
             request.m_payload = payload;

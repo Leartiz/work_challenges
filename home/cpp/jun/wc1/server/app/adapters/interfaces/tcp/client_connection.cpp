@@ -2,11 +2,12 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-#include "utils/uuid/uuid_utils.h"
-#include "service/services.h"
-#include "client_connection.h"
-#include "logging/logging.h"
 #include "tcp_common.h"
+#include "request_context.h"
+#include "client_connection.h"
+
+#include "utils/uuid/uuid_utils.h"
+#include "logging/logging.h"
 
 #include "dto/response.h"
 #include "dto/request.h"
@@ -35,19 +36,17 @@ namespace lez
 
                 // -------------------------------------------------------
 
-                Client_connection::Client_connection(io_context& ioc,
-                                                     const service::Services& services)
-                    : m_ioc{ ioc }, m_tcp_socket{ ioc }
-					, m_deadline_timer{ ioc }
-                    , m_handler{ uuid_utils::gen(), services } // has id?
+                Client_connection::Client_connection(io_context& ioc, Request_handler& handler)
+                    : m_ioc{ ioc }, m_tcp_socket{ ioc }, m_deadline_timer{ ioc }
+                    , m_client_ctx{ Client_context::create(uuid_utils::gen()) } // has id?
+                    , m_handler{ handler }
                 {}
 
-                Client_connection::ptr
-                    Client_connection::create(io_context& ioc,
-                                              service::Services services)
+                Client_connection::ptr Client_connection::create(io_context& ioc,
+                                                                 Request_handler& handler)
 				{
                     return std::shared_ptr<Client_connection>(
-                        new Client_connection(ioc, std::move(services)));
+                        new Client_connection(ioc, handler));
 				}
 
                 void Client_connection::correct_close(const error_code& err)
@@ -195,6 +194,8 @@ namespace lez
                                       get_remote_addr(), e.what());
 
                         // there will be no answer!?
+                        // TODO: !!!
+
                         correct_close();
                         return;
                     }
@@ -213,8 +214,11 @@ namespace lez
 
                     // ***
 
-                    const auto response = m_handler.handle(request);
-                    async_write(response->to_json().dump());
+                    auto req_ctx = \
+                        Request_context::create(m_client_ctx, request); // ?
+
+                    const auto response = m_handler.handle(req_ctx);
+                    async_write(m_message_creator.create(response));
 				}
 
 				void Client_connection::write_handler(const error_code& err,

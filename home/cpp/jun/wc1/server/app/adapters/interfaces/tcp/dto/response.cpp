@@ -19,6 +19,34 @@ namespace lez::adapters::interfaces::tcp::dto
         return j;
     }
 
+    // ok
+    // -------------------------------------------------------------------
+
+    Response::Sp Response::sucess(std::uint64_t request_id, std::shared_ptr<Response_result> rr)
+    {
+        return nullptr;
+    }
+
+    // err
+    // -------------------------------------------------------------------
+
+    Response::Sp Response::bad_request(std::uint64_t request_id, const std::string& extra_text)
+    {
+
+
+        return nullptr;
+    }
+
+    Response::Sp Response::not_found(std::uint64_t request_id, const std::string& extra_text)
+    {
+        return nullptr;
+    }
+
+    Response::Sp Response::internal_server_error(std::uint64_t request_id, const std::string& extra_text)
+    {
+        return nullptr;
+    }
+
     // -------------------------------------------------------------------
 
     Response::Response(std::uint64_t id, int status_code, std::shared_ptr<Error> err)

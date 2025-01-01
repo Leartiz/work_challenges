@@ -299,6 +299,19 @@ void Common::test_Message_parser_parse_request_err_n1()
     // TODO: !
 }
 
+// Message creator
+// -----------------------------------------------------------------------
+
+void Common::test_Message_creator_create_n0()
+{
+    // TODO: !!!
+}
+
+void Common::test_Message_creator_create_n1()
+{
+    // TODO: !!!
+}
+
 // std library
 // -----------------------------------------------------------------------
 

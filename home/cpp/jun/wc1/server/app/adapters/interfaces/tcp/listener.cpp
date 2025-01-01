@@ -17,7 +17,7 @@ namespace lez
 
                 Listener::Listener(io_context& ioc, const Services& services, const uint16_t port)
                     : m_ioc{ ioc }, m_tcp_acceptor{ ioc, Common::make_tcp_endpoint(port) }
-                    , m_services{ services }
+                    , m_handler{ services } // create one instance!
                 {
                     async_accept();
                 }
@@ -25,14 +25,14 @@ namespace lez
                 Listener::Listener(io_context& ioc, const Services& services,
                     const std::string& ip, const uint16_t port)
                     : m_ioc{ ioc }, m_tcp_acceptor{ ioc, Common::make_tcp_endpoint(ip, port) }
-                    , m_services{ services }
+                    , m_handler{ services }
                 {
                     async_accept();
                 }
 
                 Listener::Listener(io_context& ioc, const Services& services, const tcp_endpoint& ep)
                     : m_ioc{ ioc }, m_tcp_acceptor{ ioc, ep }
-                    , m_services{ services }
+                    , m_handler{ services }
                 {
                     async_accept();
                 }
@@ -46,7 +46,7 @@ namespace lez
 
                     // ***
 
-                    auto new_client_connection = Client_connection::create(m_ioc, m_services);
+                    auto new_client_connection = Client_connection::create(m_ioc, m_handler);
                     m_tcp_acceptor.async_accept(new_client_connection->get_tcp_socket(),
                         boost::bind(&Listener::accept_handler, this, new_client_connection,
                             boost::asio::placeholders::error));

@@ -1,14 +1,13 @@
-FROM ubuntu:22.04
+FROM alpine
 
 # ***
 
-RUN apt update 
-
-RUN apt install -y build-essential
-RUN apt install -y qt6-base-dev
-RUN apt install -y lua5.4
-RUN apt install -y liblua5.4-dev
-RUN apt install -y wget
+RUN apk add --no-cache \
+    build-base \
+    qt6-qtbase-dev \
+    lua5.4 \
+    lua5.4-dev \
+    wget
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -32,8 +31,8 @@ ENV PATH="/usr/lib/qt6/bin:${PATH}"
 
 # ***
 
-RUN echo "Boost dir contents:" && \
-    ls -al /boost_1_86_0/stage/lib
+RUN echo "BOOST_INCLUDE_DIR=${BOOST_INCLUDE_DIR}" && \
+    echo "BOOST_LIBRARY_DIR=${BOOST_LIBRARY_DIR}"
 
 WORKDIR /wc1
 COPY . .
