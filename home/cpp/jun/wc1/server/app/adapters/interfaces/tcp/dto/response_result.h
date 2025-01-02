@@ -11,11 +11,13 @@ namespace lez::adapters::interfaces::tcp::dto
     {
     public:
         Response_result();
+        virtual ~Response_result() = default;
 
-        virtual const nlohmann::json to_json() const { return {}; }
+    public:
+        virtual const nlohmann::json to_json() const = 0;
     };
 
-    using Sp_res_result =
+    using Sp_res_result = \
         std::shared_ptr<Response_result>;
 }
 

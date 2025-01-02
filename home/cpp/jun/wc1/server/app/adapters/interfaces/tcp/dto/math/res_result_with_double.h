@@ -1,17 +1,34 @@
 #ifndef RES_RESULT_WITH_DOUBLE_H
 #define RES_RESULT_WITH_DOUBLE_H
 
+#include <memory>
+
+#include <nlohmann/json.hpp>
+
+#include "adapters/interfaces/tcp/dto/response_result.h"
+
 namespace lez::adapters::interfaces::tcp::dto::math
 {
-    class Res_result_with_double
+    class Res_result_with_double : public Response_result
     {
     public:
-        Res_result_with_double();
+        struct Json_key
+        {
+            static constexpr char VALUE[] = "value";
+        };
 
-        // TODO: !!!
+    public:
+        using Sp = std::shared_ptr<Res_result_with_double>;
+        static Sp create(double value);
+
+    public:
+        explicit Res_result_with_double(double value);
+        ~Res_result_with_double() = default;
+
+        const nlohmann::json to_json() const override;
 
     private:
-        double value;
+        double m_value;
     };
 }
 

@@ -42,6 +42,8 @@ namespace lez
                 lua_close(m_lua_state);
             }
 
+            // if lua-err then `std::runtime_error` as client err?!
+
             double Lua_math::calculate_expression(const std::string& expression)
 			{
                 validate_expression(expression);
@@ -51,7 +53,7 @@ namespace lez
                 if (status_value != LUA_OK) {
                     std::ostringstream sout;
                     sout << "lua code execution failed with error: " <<
-                        lua_tostring(m_lua_state, -1);
+                            lua_tostring(m_lua_state, -1);
                     lua_pop(m_lua_state, 1); // !
                     throw std::runtime_error{ sout.str() };
                 }
@@ -60,11 +62,13 @@ namespace lez
                 if (lua_isnumber(m_lua_state, -1)) {
                     const double result = lua_tonumber(m_lua_state, -1); // ok!
                     lua_pop(m_lua_state, 1);
-                    return result;
+                    return result; // ok!
                 }
 
                 lua_pop(m_lua_state, 1);
-                throw std::runtime_error{ "result is not a number" };
+                throw std::runtime_error{
+                    "expression/result is not a number"
+                };
 			}
 		}
 	}

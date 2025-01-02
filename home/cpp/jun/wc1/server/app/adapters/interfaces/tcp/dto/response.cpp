@@ -12,6 +12,12 @@ namespace lez::adapters::interfaces::tcp::dto
         return j;
     }
 
+    // -------------------------------------------------------------------
+
+    Response::Error::Error(const std::string& msg)
+        : message(msg)
+    {}
+
     const nlohmann::json Response::Error::to_json() const
     {
         nlohmann::json j;
@@ -24,7 +30,10 @@ namespace lez::adapters::interfaces::tcp::dto
 
     Response::Sp Response::sucess(std::uint64_t request_id, std::shared_ptr<Response_result> rr)
     {
-        return nullptr;
+        // `rr` maybe nullptr!
+
+        return std::make_shared<Response>(request_id, (int)Status_code::OK,
+                                          rr);
     }
 
     // err
@@ -32,25 +41,27 @@ namespace lez::adapters::interfaces::tcp::dto
 
     Response::Sp Response::bad_request(std::uint64_t request_id, const std::string& extra_text)
     {
-
-
-        return nullptr;
+        return std::make_shared<Response>(request_id, (int)Status_code::BadRequest,
+                                          std::make_shared<Error>(extra_text));
     }
 
     Response::Sp Response::not_found(std::uint64_t request_id, const std::string& extra_text)
     {
-        return nullptr;
+        return std::make_shared<Response>(request_id, (int)Status_code::NotFound,
+                                          std::make_shared<Error>(extra_text));
     }
 
     Response::Sp Response::internal_server_error(std::uint64_t request_id, const std::string& extra_text)
     {
-        return nullptr;
+        return std::make_shared<Response>(request_id, (int)Status_code::InternalServerError,
+                                          std::make_shared<Error>(extra_text));
     }
+    //...
 
     // -------------------------------------------------------------------
 
-    Response::Response(std::uint64_t id, int status_code, std::shared_ptr<Error> err)
-        : m_request_id{ id }, m_status_code{ status_code }
+    Response::Response(std::uint64_t request_id, int status_code, std::shared_ptr<Error> err)
+        : m_request_id{ request_id }, m_status_code{ status_code }
         , m_error{ err }, m_result{ nullptr }
         , m_metadata{ nullptr }
     {
@@ -60,8 +71,8 @@ namespace lez::adapters::interfaces::tcp::dto
         // TODO: combinations check?
     }
 
-    Response::Response(std::uint64_t id, int status_code, std::shared_ptr<Response_result> rr)
-        : m_request_id{ id }, m_status_code{ status_code }
+    Response::Response(std::uint64_t request_id, int status_code, std::shared_ptr<Response_result> rr)
+        : m_request_id{ request_id }, m_status_code{ status_code }
         , m_error{ nullptr }, m_result{ rr }
         , m_metadata{ nullptr }
     {

@@ -50,6 +50,9 @@ namespace lez::adapters::interfaces::tcp::dto
                 static constexpr char MESSAGE[] = "message";
             };
 
+            Error() = default;
+            explicit Error(const std::string& msg);
+
             const nlohmann::json to_json() const;
             std::string message;
         };
@@ -73,10 +76,11 @@ namespace lez::adapters::interfaces::tcp::dto
         static Sp bad_request(std::uint64_t request_id, const std::string&);
         static Sp not_found(std::uint64_t request_id, const std::string&);
         static Sp internal_server_error(std::uint64_t request_id, const std::string&);
+        //...
 
     public:
-        Response(std::uint64_t id, int status_code, std::shared_ptr<Error> err);
-        Response(std::uint64_t id, int status_code, std::shared_ptr<Response_result> rr);
+        Response(std::uint64_t request_id, int status_code, std::shared_ptr<Error> err);
+        Response(std::uint64_t request_id, int status_code, std::shared_ptr<Response_result> rr);
 
         void set_metadata(std::shared_ptr<Metadata> metadata);
         void update_metada(std::chrono::system_clock::time_point);
@@ -97,6 +101,9 @@ namespace lez::adapters::interfaces::tcp::dto
     private:
         std::shared_ptr<Metadata> m_metadata;
     };
+
+    using Sp_response = \
+        std::shared_ptr<Response>;
 }
 
 #endif // RESPONSE_H

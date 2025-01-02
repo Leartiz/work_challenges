@@ -16,8 +16,8 @@ namespace lez::adapters::interfaces::tcp
         m_route_map[Math_service::SERVICE_NAME][Math_service::Action::CALCULATE] =
             [this](Request_context::Sp ctx) -> dto::Response::Sp {
 
-            auto r = ctx->req();
-            auto pd = r->get_payload();
+            const auto r = ctx->req();
+            const auto pd = r->get_payload();
 
             if (!pd) {
                 return dto::Response::bad_request(
@@ -33,8 +33,15 @@ namespace lez::adapters::interfaces::tcp
 
             // ***
 
-            const auto value = m_services.math_service->calculate_expression(cpd->get_expr());
-            return dto::Response::sucess(r->get_id(), nullptr);
+            try {
+                const auto value = m_services.math_service->calculate_expression(cpd->get_expr());
+                return dto::Response::sucess(r->get_id(),
+                                             dto::math::Res_result_with_double::create(value));
+            }
+            catch(const std::runtime_error& e) {
+                return dto::Response::bad_request(
+                    r->get_id(), e.what());
+            }
         };
         //...
     }

@@ -10,7 +10,7 @@ class Message_creator final
 {
 public:
     Message_creator();
-    std::string create(dto::Sp_response response) const;
+    std::string create(dto::Response::Sp response) const;
 };
 
 }
