@@ -4,7 +4,7 @@
 
 #include "req_payload_with_expr.h"
 
-namespace lez::adapters::interfaces::tcp::dto::math
+namespace lez::adapters::interfaces::tcp::dto::use_case
 {
     const std::string& Req_payload_with_expr::get_expr() const
     {

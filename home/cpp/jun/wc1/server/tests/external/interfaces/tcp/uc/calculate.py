@@ -30,8 +30,7 @@ def send_tcp_request(host, port, data):
 
 data_to_send = {
     "request_id": 12345,
-    "service": "math",
-    "action": "calculate",
+    "use_case": "calculate_math_expression",
     "payload": {
         "expression": "1 + 2 + 3 + 4 + 5"
     }

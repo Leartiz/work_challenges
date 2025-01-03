@@ -1,19 +1,16 @@
 #include <memory>
 
 #include "request_handler.h"
-#include "service/services.h"
 
-#include "dto/math/req_payload_with_expr.h"
-#include "dto/math/res_result_with_double.h"
+#include "dto/use_case/req_payload_with_expr.h"
+#include "dto/use_case/res_result_with_double.h"
 
 namespace lez::adapters::interfaces::tcp
 {
-    using namespace service::contract;
-
-    Request_handler::Request_handler(const service::Services& services)
-        : m_services{ services }
+    Request_handler::Request_handler(const Use_cases& services)
+        : m_ucs{ services }
     {
-        m_route_map[Math_service::SERVICE_NAME][Math_service::Action::CALCULATE] =
+        m_route_map[Calc_math_expr_uc::NAME] =
             [this](Request_context::Sp ctx) -> dto::Response::Sp {
 
             const auto r = ctx->req();
@@ -21,26 +18,30 @@ namespace lez::adapters::interfaces::tcp
 
             if (!pd) {
                 return dto::Response::bad_request(
-                    r->get_id(), "payload is nullptr");
+                    r->get_request_id(), "payload is nullptr");
             }
 
-            using namespace dto::math;
+            using namespace dto::use_case;
             auto cpd = std::dynamic_pointer_cast<Req_payload_with_expr>(pd);
             if (!cpd) {
                 return dto::Response::bad_request(
-                    r->get_id(), "payload is of a different type");
+                    r->get_request_id(), "payload is of a different type");
             }
 
             // ***
 
             try {
-                const auto value = m_services.math_service->calculate_expression(cpd->get_expr());
-                return dto::Response::sucess(r->get_id(),
-                                             dto::math::Res_result_with_double::create(value));
+                m_ucs.calc_math_expr_uc->execute(cpd->get_expr());
+                const auto uc_result = m_ucs.calc_math_expr_uc->get_result();
+
+
+                return dto::Response::sucess(r->get_request_id(),
+                                             Res_result_with_double::create(uc_result));
             }
             catch(const std::runtime_error& e) {
+
                 return dto::Response::bad_request(
-                    r->get_id(), e.what());
+                    r->get_request_id(), e.what());
             }
         };
         //...
@@ -49,17 +50,12 @@ namespace lez::adapters::interfaces::tcp
     dto::Response::Sp Request_handler::handle(Request_context::Sp ctx)
     {
         auto r = ctx->req();
-
-        const auto& action = r->get_action_name();
-        const auto& service = r->get_service_name();
-
-        if (!m_route_map.contains(service)) {
+        const auto& uc_name = r->get_use_case_name();
+        if (!m_route_map.contains(uc_name)) {
 
         }
-        if (!m_route_map[service].contains(action)) {
+        // ?
 
-        }
-
-        return m_route_map[service][action](ctx);
+        return m_route_map[uc_name](ctx);
     }
 }

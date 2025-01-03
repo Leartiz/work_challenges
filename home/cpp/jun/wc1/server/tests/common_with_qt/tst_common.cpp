@@ -11,10 +11,13 @@
 
 #include "tst_common.h"
 
-#include "service/math_service.h"
-#include "service/impl/lua_math.h"
+#include "domain/service/math_service.h"
+#include "domain/service/impl/lua_math_service.h"
 
-#include "adapters/interfaces/tcp/dto/math/req_payload_with_expr.h"
+#include "domain/use_case/use_cases.h"
+#include "domain/use_case/impl/calc_math_expr_uc_impl.h"
+
+#include "adapters/interfaces/tcp/dto/use_case/req_payload_with_expr.h"
 #include "adapters/interfaces/tcp/dto/request.h"
 #include "adapters/interfaces/tcp/message_parser.h"
 
@@ -35,19 +38,23 @@ Common::~Common() {}
 
 void Common::test_Lua_math_calculate_expression_n0()
 {
-    using namespace lez::service::contract;
-    using namespace lez::service::impl;
+    using namespace lez::domain::service;
+    using namespace lez::domain::service::impl;
 
-    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
+    std::shared_ptr<contract::Math_service> m = \
+        std::make_shared<Lua_math_service>();
+
     QCOMPARE(m->calculate_expression("5+5"), 10);
 }
 
 void Common::test_Lua_math_calculate_expression_n1()
 {
-    using namespace lez::service::contract;
-    using namespace lez::service::impl;
+    using namespace lez::domain::service;
+    using namespace lez::domain::service::impl;
 
-    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
+    std::shared_ptr<contract::Math_service> m = \
+        std::make_shared<Lua_math_service>();
+
     QCOMPARE(m->calculate_expression("5*5*3"), 75);
 }
 
@@ -55,10 +62,12 @@ void Common::test_Lua_math_calculate_expression_n1()
 
 void Common::test_Lua_math_calculate_expression_err_n0()
 {
-    using namespace lez::service::contract;
-    using namespace lez::service::impl;
+    using namespace lez::domain::service;
+    using namespace lez::domain::service::impl;
 
-    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
+    std::shared_ptr<contract::Math_service> m = \
+        std::make_shared<Lua_math_service>();
+
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
                              (m->calculate_expression("5 5 5 5")));
 
@@ -67,10 +76,12 @@ void Common::test_Lua_math_calculate_expression_err_n0()
 
 void Common::test_Lua_math_calculate_expression_err_n1()
 {
-    using namespace lez::service::contract;
-    using namespace lez::service::impl;
+    using namespace lez::domain::service;
+    using namespace lez::domain::service::impl;
 
-    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
+    std::shared_ptr<contract::Math_service> m = \
+        std::make_shared<Lua_math_service>();
+
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
                              (m->calculate_expression("5+5; while true do end")));
 }
@@ -102,10 +113,12 @@ void Common::test_Lua_math_calculate_expression()
 
     // ***
 
-    using namespace lez::service::contract;
-    using namespace lez::service::impl;
+    using namespace lez::domain::service;
+    using namespace lez::domain::service::impl;
 
-    std::shared_ptr<Math_service> m = std::make_shared<Lua_math>();
+    std::shared_ptr<contract::Math_service> m = \
+        std::make_shared<Lua_math_service>();
+
     QCOMPARE(m->calculate_expression(expression), result);
 }
 
@@ -116,7 +129,7 @@ void Common::test_Payload_with_expr_to_json_n0()
     using nlohmann::json;
     using namespace lez::adapters::interfaces::tcp::dto;
 
-    math::Req_payload_with_expr pd;
+    use_case::Req_payload_with_expr pd;
     pd.set_expr("1 + 2 + 3 + 4 + 5");
     const auto j = pd.to_json();
 
@@ -131,7 +144,7 @@ void Common::test_Payload_with_expr_from_json_n0()
 
     const std::string expr = "1 + 2 + 3 + 4 + 5";
 
-    math::Req_payload_with_expr pd;
+    use_case::Req_payload_with_expr pd;
     const json j = {
         { "payload", {
               { "expression", expr.c_str() }
@@ -158,15 +171,15 @@ void Common::test_Request_to_json_n1()
 {
     using nlohmann::json;
     using namespace lez::adapters::interfaces::tcp::dto;
+    using namespace lez::domain::use_case;
 
     Request r;
-    r.set_service_name("math");
-    r.set_action_name("calculate");
+    r.set_use_case_name(Calc_math_expr_uc::NAME);
 
-    math::Req_payload_with_expr pd;
+    use_case::Req_payload_with_expr pd;
     json j = { { "payload", { { "expression", "1 + 2 + 3 + 4 + 5" } } } };
     pd.from_json(j);
-    r.set_payload(std::make_shared<math::Req_payload_with_expr>(pd));
+    r.set_payload(std::make_shared<use_case::Req_payload_with_expr>(pd));
 
     // ***
 
@@ -181,8 +194,7 @@ void Common::test_Request_from_json_n0()
 
     const std::string json_str = R"({
             "request_id": 12345,
-            "service": "math",
-            "action": "calculate",
+            "use_case": "calculate_math_expression",
             "payload": {
                 "expression": "1 + 2 + 3 + 4 + 5"
             }
@@ -232,8 +244,7 @@ void Common::test_Message_parser_parse_request_n0()
 
     std::string json_bytes = R"({
         "request_id": 12345,
-        "service": "math",
-        "action": "calculate",
+        "use_case": "calculate_math_expression",
         "payload": {
             "expression": "1 + 2 + 3 + 4 + 5"
         }
@@ -271,8 +282,7 @@ void Common::test_Message_parser_parse_request_err_n0()
     // ***
 
     std::string json_bytes = R"({
-        "service": "math",
-        "action": "calculate",
+        "use_case": "calculate_math_expression",
         "payload": {
             "expression": "1 + 2 + 3 + 4 + 5"
         }

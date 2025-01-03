@@ -5,7 +5,7 @@
 
 #include "../request_payload.h"
 
-namespace lez::adapters::interfaces::tcp::dto::math
+namespace lez::adapters::interfaces::tcp::dto::use_case
 {
     class Req_payload_with_expr : public Request_payload
     {

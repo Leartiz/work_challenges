@@ -6,7 +6,7 @@
 #include <boost/asio/ip/address.hpp>
 
 #include "client_connection.h"
-#include "service/services.h"
+#include "domain/use_case/use_cases.h"
 
 namespace lez
 {
@@ -26,12 +26,12 @@ namespace lez
                     using error_code = boost::system::error_code;
 
                 public:
-                    using Services = service::Services;
+                    using Use_cases = domain::use_case::Use_cases;
 
                 public:
-                    Listener(io_context&, const Services& services, const uint16_t port);
-                    Listener(io_context&, const Services& services, const tcp_endpoint&);
-                    Listener(io_context&, const Services& services,
+                    Listener(io_context&, const Use_cases& use_cases, const uint16_t port);
+                    Listener(io_context&, const Use_cases& use_cases, const tcp_endpoint&);
+                    Listener(io_context&, const Use_cases& use_cases,
                         const std::string& ip, const uint16_t port);
 
                 private:

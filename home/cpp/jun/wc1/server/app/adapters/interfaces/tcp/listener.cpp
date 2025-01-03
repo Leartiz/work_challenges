@@ -15,24 +15,24 @@ namespace lez
             {
                 using namespace std;
 
-                Listener::Listener(io_context& ioc, const Services& services, const uint16_t port)
+                Listener::Listener(io_context& ioc, const Use_cases& use_cases, const uint16_t port)
                     : m_ioc{ ioc }, m_tcp_acceptor{ ioc, Common::make_tcp_endpoint(port) }
-                    , m_handler{ services } // create one instance!
+                    , m_handler{ use_cases } // create one instance!
                 {
                     async_accept();
                 }
 
-                Listener::Listener(io_context& ioc, const Services& services,
+                Listener::Listener(io_context& ioc, const Use_cases& use_cases,
                     const std::string& ip, const uint16_t port)
                     : m_ioc{ ioc }, m_tcp_acceptor{ ioc, Common::make_tcp_endpoint(ip, port) }
-                    , m_handler{ services }
+                    , m_handler{ use_cases }
                 {
                     async_accept();
                 }
 
-                Listener::Listener(io_context& ioc, const Services& services, const tcp_endpoint& ep)
+                Listener::Listener(io_context& ioc, const Use_cases& use_cases, const tcp_endpoint& ep)
                     : m_ioc{ ioc }, m_tcp_acceptor{ ioc, ep }
-                    , m_handler{ services }
+                    , m_handler{ use_cases }
                 {
                     async_accept();
                 }

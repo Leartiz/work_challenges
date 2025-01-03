@@ -8,20 +8,23 @@
 
 namespace lez::adapters::interfaces::tcp
 {
-    class Request_context
+    class Request_context final
     {
     public:
         using Sp = std::shared_ptr<Request_context>;
-        static Sp create(Client_context::Sp client_ctx, dto::Sp_request req);
+        static Sp create(Client_context::Sp client_ctx,
+                         dto::Request::Sp req);
 
     public:
-        Request_context(Client_context::Sp client_ctx, dto::Sp_request req);
+        Request_context(Client_context::Sp client_ctx,
+                        dto::Request::Sp req);
+
         Client_context::Sp client_ctx() const;
-        dto::Sp_request req() const;
+        dto::Request::Sp req() const;
 
     private:
         Client_context::Sp m_client_ctx;
-        dto::Sp_request m_request;
+        dto::Request::Sp m_request;
     };
 }
 

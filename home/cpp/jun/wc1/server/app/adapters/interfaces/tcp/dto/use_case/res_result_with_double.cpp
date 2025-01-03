@@ -1,6 +1,6 @@
 #include "res_result_with_double.h"
 
-namespace lez::adapters::interfaces::tcp::dto::math
+namespace lez::adapters::interfaces::tcp::dto::use_case
 {
     Res_result_with_double::Sp Res_result_with_double::create(double value)
     {

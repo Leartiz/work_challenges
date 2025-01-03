@@ -9,11 +9,16 @@
 #include "logging/logging.h"
 #include "logging/impl/boost/main_boost_logger.h"
 
-#include "service/impl/lua_math.h"
-#include "adapters/interfaces/tcp/listener.h"
+#include "domain/use_case/use_cases.h"
+#include "domain/use_case/impl/calc_math_expr_uc_impl.h"
 
-#include "adapters/infrastructure/storage/log/log_storage.h"
-#include "adapters/infrastructure/storage/log/impl/clickhouse/clickhouse_storage.h"
+#include "domain/service/math_service.h"
+#include "domain/service/impl/lua_math_service.h"
+
+#include "adapters/infrastructure/storage/uc_log/use_case_log_storage.h"
+#include "adapters/infrastructure/storage/uc_log/impl/clickhouse/uc_log_clickhouse_storage.h"
+
+#include "adapters/interfaces/tcp/listener.h"
 
 using namespace lez;
 
@@ -70,11 +75,20 @@ void run_io_context(boost::asio::io_context& ioc) {
 
 int main() /* or wrap in a class: App */ 
 {
-    using adapters::interfaces::tcp::Listener;
-    using service::impl::Lua_math;
+    using namespace domain::use_case;
+    using namespace domain::use_case::impl;
 
-    using adapters::infrastructure::Log_storage;
-    using adapters::infrastructure::impl::Clickhouse_storage;
+    using namespace domain::service::contract;
+    using namespace domain::service::impl;
+
+    // ***
+
+    using namespace adapters::infrastructure;
+    using namespace adapters::infrastructure::impl;
+
+    // ***
+
+    using adapters::interfaces::tcp::Listener;
 
 	try {
 
@@ -88,38 +102,43 @@ int main() /* or wrap in a class: App */
         test_logging();
 
         c.log(logging::get_logger(),
-              logging::Level::debug);
-
-        // framework!?
-        boost::asio::io_context ioc;
-
-        /* services */
-
-        const service::Services services{
-            .math_service = std::make_shared<Lua_math>(),
-        };
+              logging::Level::trace);
 
         /* infrastructure */
 
-        Log_storage *log_storage = new Clickhouse_storage();
+        const auto uc_log_storage = std::make_shared<Uc_log_clickhouse_storage>();
+
+        /* services and ucs */
+
+        const auto math_service = std::make_shared<Lua_math_service>();
+        //...
+
+        const domain::use_case::Use_cases ucs{
+            .calc_math_expr_uc = Calc_math_expr_uc_impl::create(
+                math_service, uc_log_storage),
+            //...
+        };
+
 
         /* interfaces */
 
-
-
-        Listener listener(ioc, services, c.port);
+        boost::asio::io_context ioc; // framework!?
+        const Listener listener(ioc, ucs, c.port);
 
         // ***
 
-        boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work_guard =
+        using executor_type = boost::asio::io_context::executor_type;
+        boost::asio::executor_work_guard<executor_type> work_guard =
             boost::asio::make_work_guard(ioc);
-        const size_t num_threads = std::thread::hardware_concurrency();
 
+        const size_t num_threads = std::thread::hardware_concurrency();
         std::vector<std::thread> threads;
         for (size_t i = 0; i < num_threads; ++i) {
             threads.emplace_back(run_io_context,
                                  std::ref(ioc));
         }
+
+        // ***
 
         for (auto& thread : threads) {
             thread.join();

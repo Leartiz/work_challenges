@@ -3,8 +3,8 @@
 #include "request.h"
 #include "common_validator.h"
 
-#include "math/req_payload_with_expr.h"
-#include "service/math_service.h"
+#include "use_case/req_payload_with_expr.h"
+#include "domain/use_case/use_cases.h"
 
 namespace
 {
@@ -14,7 +14,10 @@ namespace
         if (j.contains(key)) {
             return j[key].get<std::string>();
         }
-        throw std::runtime_error(err_message);
+
+        throw std::runtime_error{
+            err_message
+        };
     }
 }
 
@@ -24,9 +27,8 @@ namespace lez::adapters::interfaces::tcp::dto
 {
 
     Request::Request()
-        : m_id{ 0 }
-        , m_service_name{}
-        , m_action_name{}
+        : m_request_id{ 0 }
+        , m_use_case_name{}
         , m_payload{ nullptr }
     {}
 
@@ -37,33 +39,22 @@ namespace lez::adapters::interfaces::tcp::dto
         m_payload = pd;
     }
 
-    void Request::set_service_name(const std::string& str)
+    void Request::set_use_case_name(const std::string& str)
     {
-        Common_validator::string_not_empty(str, "service name cannot be empty");
-        m_service_name = str;
-    }
-
-    void Request::set_action_name(const std::string& str)
-    {
-        Common_validator::string_not_empty(str, "action name cannot be empty");
-        m_action_name = str;
+        Common_validator::string_not_empty(str, "use case name cannot be empty");
+        m_use_case_name = str;
     }
 
     // -----------------------------------------------------------------------
 
-    std::uint64_t Request::get_id() const
+    std::uint64_t Request::get_request_id() const
     {
-        return m_id;
+        return m_request_id;
     }
 
-    const std::string& Request::get_service_name() const
+    const std::string& Request::get_use_case_name() const
     {
-        return m_service_name;
-    }
-
-    const std::string& Request::get_action_name() const
-    {
-        return m_action_name;
+        return m_use_case_name;
     }
 
     Sp_req_payload Request::get_payload() const
@@ -76,38 +67,31 @@ namespace lez::adapters::interfaces::tcp::dto
     std::shared_ptr<Request> Request::from_json(const nlohmann::json& j)
     {
         Request request;
-        if (j.contains(Json_key::ID)) {
-            request.m_id = j[Json_key::ID].get<std::uint64_t>();
+        if (j.contains(Json_key::REQUEST_ID)) {
+            request.m_request_id = j[Json_key::REQUEST_ID].get<std::uint64_t>();
         }
         else {
             throw std::runtime_error(
-                std::format("missing `{}` in JSON", Json_key::ID));
+                std::format("missing `{}` in JSON", Json_key::REQUEST_ID));
         }
 
         // ***
 
-        const auto service_name = parse_str_from_json(j, Json_key::SERVICE,
-                    std::format("missing `{}` in JSON", Json_key::SERVICE));
-        Common_validator::string_not_empty(service_name,
-                    std::format("`{}` is empty string", Json_key::SERVICE));
-
-        const auto action_name = parse_str_from_json(j, Json_key::ACTION,
-                    std::format("missing `{}` in JSON", Json_key::ACTION));
-        Common_validator::string_not_empty(action_name,
-                    std::format("`{}` is empty string", Json_key::ACTION));
-
-        request.m_service_name = service_name;
-        request.m_action_name = action_name;
+        const auto use_case_name = parse_str_from_json(j, Json_key::USE_CASE,
+                    std::format("missing `{}` in JSON", Json_key::USE_CASE));
+        Common_validator::string_not_empty(use_case_name,
+                    std::format("`{}` is empty string", Json_key::USE_CASE));
+        request.m_use_case_name = use_case_name;
 
         // ***
 
-        using namespace service::contract;
-        if (service_name == Math_service::SERVICE_NAME && action_name == Math_service::Action::CALCULATE) { // !
-            const auto payload = std::make_shared<math::Req_payload_with_expr>();
+        using namespace domain::use_case;
+        if (use_case_name == Calc_math_expr_uc::NAME) { // !
+            const auto payload = std::make_shared<use_case::Req_payload_with_expr>();
             payload->from_json(j); // void!
             request.m_payload = payload;
         }
-        //...
+        // other ucs...
         else {
             throw std::runtime_error("unsupported service or action");
         }
@@ -132,9 +116,8 @@ namespace lez::adapters::interfaces::tcp::dto
     const nlohmann::json Request::to_json() const
     {
         nlohmann::json j;
-        j[Json_key::ID] = m_id;
-        j[Json_key::SERVICE] = m_service_name;
-        j[Json_key::ACTION] = m_action_name;
+        j[Json_key::REQUEST_ID] = m_request_id;
+        j[Json_key::USE_CASE] = m_use_case_name;
 
         if (m_payload) {
            auto j_payload = m_payload->to_json(); // ?

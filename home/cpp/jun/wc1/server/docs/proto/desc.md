@@ -19,21 +19,16 @@
 
 <!-- -------------------------------------------- -->
 
-## Service
+## Use Case 🧭
 
-The payload is determined by a combination: 
-    service and action.
+## `Calculate math expression`
 
-## Math (calculate expression)
-
-### Request
+### Request ->
 
 ```json
 {
     "request_id": "<uint64>",
-
-    "service": "math",
-    "action": "calculate",
+    "use_case": "calculate_math_expression",
 
     "payload": {
         "expression": "<string>"
@@ -46,9 +41,7 @@ The payload is determined by a combination:
 ```json
 {
     "request_id": 12345678901234567890,
-
-    "service": "math",
-    "action": "calculate",
+    "use_case": "calculate_math_expression", // !
 
     "payload": {
         "expression": "3 + 5 * (2 - 8)"
@@ -56,7 +49,7 @@ The payload is determined by a combination:
 }
 ```
 
-### Response
+### Response <-
 
 ```json
 {
@@ -109,7 +102,7 @@ The payload is determined by a combination:
 
     "result": null,
     "error": {
-        "message": "invalid mathematical expression"
+        "message": "expression/result is not a number"
     },
 
     "metadata": {

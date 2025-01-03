@@ -7,25 +7,27 @@
 
 #include "dto/response.h"
 #include "request_context.h"
-#include "service/services.h"
+#include "domain/use_case/use_cases.h"
 
 namespace lez::adapters::interfaces::tcp
 {
+    using namespace domain::use_case;
+
     class Request_handler final
     {
     public:
-        explicit Request_handler(const service::Services&);
+        explicit Request_handler(const Use_cases&);
 
     public:
         dto::Response::Sp handle(Request_context::Sp ctx);
 
         // services/use-cases!
     private:
-        const service::Services m_services; // as ptrs!
+        const Use_cases m_ucs; // as ptr collection!
 
     private:
         using route_handler = std::function<dto::Response::Sp(Request_context::Sp ctx)>;
-        using route_map = std::map<std::string, std::map<std::string, route_handler>>;
+        using route_map = std::map<std::string, route_handler>;
         route_map m_route_map;
     };
 }

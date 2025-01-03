@@ -7,7 +7,7 @@
 
 #include "adapters/interfaces/tcp/dto/response_result.h"
 
-namespace lez::adapters::interfaces::tcp::dto::math
+namespace lez::adapters::interfaces::tcp::dto::use_case
 {
     class Res_result_with_double : public Response_result
     {
