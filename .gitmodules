@@ -1,6 +1,0 @@
-[submodule "home/cpp/jun/wc1/server/dependency/clickhouse"]
-	path = home/cpp/jun/wc1/server/dependency/clickhouse
-	url = https://github.com/ClickHouse/clickhouse-cpp.git
-[submodule "home/cpp/jun/wc1/server/dependency/strutil"]
-	path = home/cpp/jun/wc1/server/dependency/strutil
-	url = https://github.com/tgalaj/strutil
